@@ -71,6 +71,18 @@
     0%,100% { transform: translateY(0); }
     50% { transform: translateY(-12px); }
   }
+  .subscribe-wrap {
+    width: 100%; max-width: 420px;
+    margin: 0 auto 36px;
+    padding: 18px;
+    border: 1.5px solid rgba(255,255,255,0.15);
+    border-radius: 20px;
+    background: rgba(255,255,255,0.05);
+  }
+  .subscribe-wrap iframe {
+    background: transparent !important;
+    color-scheme: dark;
+  }
 </style>
 </head>
 <body>
@@ -78,8 +90,10 @@
   <p class="tag">World 03</p>
   <h1>The Modern<br>Villager</h1>
   <p class="desc">Stories, conversations and creativity from Singapore's most interesting people. This world is being built — come back soon.</p>
+  <div class="subscribe-wrap">
+    <script async src="https://subscribe-forms.beehiiv.com/v3/loader.js" data-beehiiv-form="22660b96-5f21-41de-873d-fd6ebd91dae5"></script>
+  </div>
   <p class="coming">✦ Coming Soon ✦</p>
-  <script async src="https://subscribe-forms.beehiiv.com/v3/loader.js" data-beehiiv-form="22660b96-5f21-41de-873d-fd6ebd91dae5"></script>
   <a class="back" href="../index.html">← Back to universe</a>
 </body>
 </html>
