@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0a0618">
+<title>Safe Space Circle SG — Coming Soon</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:wght@300;400;500&display=swap');
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: #0a0618 !important; min-height: 100vh; }
+  body {
+    font-family: 'DM Sans', sans-serif; color: #f5f0ff;
+    min-height: 100vh; display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    padding: 40px 24px;
+    background: radial-gradient(ellipse 60% 50% at 50% 50%, rgba(245,158,11,0.15) 0%, transparent 70%),
+                radial-gradient(ellipse 40% 30% at 20% 20%, rgba(139,92,246,0.12) 0%, transparent 60%),
+                #0a0618;
+    text-align: center;
+  }
+  .planet {
+    width: 160px; height: 160px; border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, #fff3c4, #ffd070, #c89010);
+    box-shadow: 0 0 40px rgba(245,158,11,0.4), 0 0 80px rgba(245,158,11,0.15);
+    margin: 0 auto 36px;
+    animation: float 4s ease-in-out infinite;
+    position: relative;
+  }
+  .planet::after {
+    content: '🌻'; font-size: 56px;
+    position: absolute; top: 50%; left: 50%;
+    transform: translate(-50%,-50%);
+  }
+  .tag {
+    font-family: 'Syne', sans-serif; font-size: 11px; font-weight: 700;
+    letter-spacing: 4px; text-transform: uppercase;
+    color: #f59e0b; margin-bottom: 16px; opacity: 0.8;
+  }
+  h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(28px, 7vw, 52px);
+    font-weight: 800; line-height: 1.2; margin-bottom: 16px;
+    color: #fff;
+    padding-bottom: 6px;
+    overflow: visible;
+    text-shadow: 0 0 20px rgba(245,158,11,0.5), 0 0 40px rgba(245,158,11,0.2);
+  }
+  .desc {
+    font-size: clamp(15px, 3vw, 18px); color: #c8b8e8;
+    font-weight: 300; line-height: 1.7; max-width: 420px;
+    margin: 0 auto 36px;
+  }
+  .coming {
+    font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700;
+    letter-spacing: 3px; text-transform: uppercase;
+    color: #f59e0b; margin-bottom: 32px;
+    text-shadow: 0 0 12px rgba(245,158,11,0.6);
+  }
+  .back {
+    font-family: 'Syne', sans-serif; font-size: 12px; font-weight: 600;
+    letter-spacing: 2px; text-transform: uppercase;
+    color: #9d8fbe; text-decoration: none;
+    border: 1.5px solid rgba(255,255,255,0.15);
+    padding: 12px 24px; border-radius: 30px;
+    background: rgba(255,255,255,0.05);
+    transition: all 0.2s; display: inline-block;
+  }
+  .back:hover { background: rgba(255,255,255,0.12); color: #fff; }
+  @keyframes float {
+    0%,100% { transform: translateY(0); }
+    50% { transform: translateY(-12px); }
+  }
+</style>
+</head>
+<body>
+  <div class="planet"></div>
+  <p class="tag">World 02</p>
+  <h1>SAFE SPACE<br>CIRCLE SG</h1>
+  <p class="desc">Workshops where curiosity is welcome and learning feels safe. This world is being built — come back soon.</p>
+  <p class="coming">✦ Coming Soon ✦</p>
+  <a class="back" href="../index.html">← Back to universe</a>
+</body>
+</html>

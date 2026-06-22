@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Retail AI Readiness Quiz — Retail Fixer</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black: #0f0f0f;
+    --white: #fafaf7;
+    --cream: #f5f0e8;
+    --gold: #c9a84c;
+    --gold-light: #e8d5a3;
+    --charcoal: #2a2a2a;
+    --mid: #6b6b6b;
+    --border: #e0d9cc;
+    --progress-bg: #e8e2d6;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--cream);
+    color: var(--black);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+  .site-header {
+    padding: 28px 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--border);
+    background: var(--cream);
+  }
+  .logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    letter-spacing: 0.08em;
+    color: var(--black);
+    text-transform: uppercase;
+  }
+  .logo span { color: var(--gold); }
+  .logo { text-decoration: none; }
+  .progress-wrap { padding: 20px 40px 0; background: var(--cream); }
+  .progress-label {
+    font-size: 0.72rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--mid);
+    margin-bottom: 8px;
+  }
+  .progress-bar { height: 3px; background: var(--progress-bg); border-radius: 2px; overflow: hidden; }
+  .progress-fill {
+    height: 100%;
+    background: var(--gold);
+    border-radius: 2px;
+    transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    width: 0%;
+  }
+  main { max-width: 680px; margin: 0 auto; padding: 60px 40px 80px; }
+  .screen { display: none; }
+  .screen.active { display: block; animation: fadeUp 0.5s ease forwards; }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(18px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .intro-tag {
+    font-size: 0.72rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 20px;
+  }
+  .intro-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.2rem, 5vw, 3.4rem);
+    line-height: 1.15;
+    color: var(--black);
+    margin-bottom: 24px;
+  }
+  .intro-title em { font-style: italic; color: var(--gold); }
+  .intro-body {
+    font-size: 1rem;
+    line-height: 1.75;
+    color: var(--charcoal);
+    margin-bottom: 40px;
+    max-width: 520px;
+  }
+  .intro-meta { display: flex; gap: 32px; margin-bottom: 48px; }
+  .meta-item { display: flex; flex-direction: column; gap: 4px; }
+  .meta-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.8rem;
+    color: var(--black);
+    line-height: 1;
+  }
+  .meta-label {
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--mid);
+  }
+  .btn-primary {
+    display: inline-block;
+    background: var(--black);
+    color: var(--white);
+    padding: 16px 40px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    border: none;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.15s;
+  }
+  .btn-primary:hover { background: var(--gold); transform: translateY(-1px); }
+  .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; transform: none; background: var(--black); }
+  .btn-secondary {
+    display: inline-block;
+    background: transparent;
+    color: var(--black);
+    padding: 14px 36px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    border: 1.5px solid var(--black);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-secondary:hover { background: var(--black); color: var(--white); }
+  .q-counter {
+    font-size: 0.72rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--mid);
+    margin-bottom: 8px;
+  }
+  .q-track {
+    font-size: 0.72rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 14px;
+  }
+  .q-text {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.3rem, 3vw, 1.75rem);
+    line-height: 1.4;
+    color: var(--black);
+    margin-bottom: 40px;
+    max-width: 560px;
+  }
+  .options { display: flex; flex-direction: column; gap: 12px; margin-bottom: 40px; }
+  .option {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 18px 22px;
+    border: 1.5px solid var(--border);
+    background: var(--white);
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    color: var(--charcoal);
+    text-align: left;
+    width: 100%;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+  }
+  .option:hover { border-color: var(--gold); background: #fffdf8; }
+  .option.selected { border-color: var(--black); background: var(--black); color: var(--white); }
+  .option-marker {
+    width: 22px;
+    height: 22px;
+    border: 1.5px solid currentColor;
+    border-radius: 50%;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 1px;
+    font-size: 0.7rem;
+    font-weight: 500;
+    opacity: 0.5;
+    transition: opacity 0.2s;
+  }
+  .option.selected .option-marker {
+    opacity: 1;
+    background: var(--gold);
+    border-color: var(--gold);
+    color: var(--black);
+  }
+  .q-nav { display: flex; gap: 12px; align-items: center; }
+  .email-wrap { max-width: 500px; }
+  .email-tag {
+    font-size: 0.72rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 16px;
+  }
+  .email-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.6rem, 4vw, 2.4rem);
+    line-height: 1.2;
+    margin-bottom: 16px;
+  }
+  .email-body {
+    font-size: 0.95rem;
+    line-height: 1.7;
+    color: var(--charcoal);
+    margin-bottom: 36px;
+  }
+  .field-wrap { margin-bottom: 16px; }
+  .field-label {
+    display: block;
+    font-size: 0.72rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--mid);
+    margin-bottom: 8px;
+  }
+  .field-input {
+    width: 100%;
+    padding: 14px 18px;
+    border: 1.5px solid var(--border);
+    background: var(--white);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 300;
+    color: var(--black);
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .field-input:focus { border-color: var(--gold); }
+  .field-input::placeholder { color: #bbb; }
+  .privacy-note { font-size: 0.78rem; color: var(--mid); margin-top: 12px; line-height: 1.6; }
+  .divider { width: 40px; height: 1px; background: var(--gold); margin: 32px 0; }
+  .error-msg { color: #c0392b; font-size: 0.82rem; margin-top: 8px; display: none; }
+  .result-header {
+    padding: 40px;
+    background: var(--black);
+    color: var(--white);
+    margin-bottom: 48px;
+    position: relative;
+    overflow: hidden;
+  }
+  .result-header::before {
+    content: '';
+    position: absolute;
+    top: -60px; right: -60px;
+    width: 200px; height: 200px;
+    border: 1px solid rgba(201,168,76,0.2);
+    border-radius: 50%;
+  }
+  .result-header::after {
+    content: '';
+    position: absolute;
+    top: -30px; right: -30px;
+    width: 120px; height: 120px;
+    border: 1px solid rgba(201,168,76,0.15);
+    border-radius: 50%;
+  }
+  .result-tag {
+    font-size: 0.72rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 12px;
+  }
+  .result-score-line {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.8rem, 5vw, 2.8rem);
+    line-height: 1.2;
+    margin-bottom: 16px;
+  }
+  .result-summary {
+    font-size: 0.95rem;
+    line-height: 1.75;
+    color: rgba(255,255,255,0.8);
+    max-width: 500px;
+  }
+  .result-score-num {
+    position: absolute;
+    bottom: 24px; right: 40px;
+    font-family: 'Playfair Display', serif;
+    font-size: 5rem;
+    color: rgba(201,168,76,0.15);
+    line-height: 1;
+  }
+  .track-scores {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 40px;
+  }
+  .track-score-card {
+    padding: 20px;
+    border: 1.5px solid var(--border);
+    background: var(--white);
+  }
+  .ts-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--mid);
+    margin-bottom: 6px;
+  }
+  .ts-rating {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.05rem;
+    color: var(--black);
+  }
+  .ts-rating span { color: var(--gold); }
+  .result-sections { display: flex; flex-direction: column; gap: 24px; margin-bottom: 48px; }
+  .result-section {
+    padding: 28px;
+    border: 1.5px solid var(--border);
+    background: var(--white);
+  }
+  .rs-label {
+    font-size: 0.72rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 8px;
+  }
+  .rs-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    margin-bottom: 10px;
+  }
+  .rs-body { font-size: 0.9rem; line-height: 1.7; color: var(--charcoal); }
+  .cta-block {
+    background: var(--cream);
+    border: 1.5px solid var(--gold-light);
+    padding: 40px;
+    text-align: center;
+  }
+  .cta-tag {
+    font-size: 0.72rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 14px;
+  }
+  .cta-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.4rem, 3vw, 1.9rem);
+    margin-bottom: 14px;
+    line-height: 1.3;
+  }
+  .cta-body {
+    font-size: 0.92rem;
+    line-height: 1.7;
+    color: var(--charcoal);
+    margin-bottom: 28px;
+    max-width: 420px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .cta-buttons { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+  @media (max-width: 600px) {
+    main { padding: 40px 24px 60px; }
+    .site-header { padding: 20px 24px; }
+    .progress-wrap { padding: 16px 24px 0; }
+    .intro-meta { gap: 20px; }
+    .result-header { padding: 28px 24px; }
+    .result-score-num { font-size: 3.5rem; bottom: 16px; right: 24px; }
+    .cta-block { padding: 28px 20px; }
+    .track-scores { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <a href="index.html" class="logo">Retail <span>Fixer</span></a>
+  <div style="font-size:0.75rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--mid);">AI Readiness Quiz</div>
+</header>
+
+<div class="progress-wrap" id="progressWrap" style="display:none;">
+  <div class="progress-label" id="progressLabel">Question 1 of 15</div>
+  <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+</div>
+
+<main>
+  <!-- INTRO -->
+  <div class="screen active" id="screen-intro">
+    <div class="intro-tag">Retail Fixer × AI Readiness</div>
+    <h1 class="intro-title">Is your store ready<br>for <em>retail's AI shift?</em></h1>
+    <p class="intro-body">AI is moving into retail — not all at once, but steadily. The stores and businesses that navigate it well won't be the ones with the biggest budgets. They'll be the ones with the clearest picture of where they are and what to do next. This quiz gives you that picture.</p>
+    <div class="intro-meta">
+      <div class="meta-item"><div class="meta-num">15</div><div class="meta-label">Questions</div></div>
+      <div class="meta-item"><div class="meta-num">~5</div><div class="meta-label">Minutes</div></div>
+      <div class="meta-item"><div class="meta-num">4</div><div class="meta-label">Areas assessed</div></div>
+    </div>
+    <button class="btn-primary" onclick="startQuiz()">Start the quiz →</button>
+  </div>
+
+  <!-- QUESTIONS -->
+  <div class="screen" id="screen-questions">
+    <div class="q-counter" id="qCounter">Question 1 of 15</div>
+    <div class="q-track" id="qTrack"></div>
+    <div class="q-text" id="qText"></div>
+    <div class="options" id="optionsWrap"></div>
+    <div class="q-nav">
+      <button class="btn-primary" id="nextBtn" onclick="nextQuestion()" disabled>Next →</button>
+      <button class="btn-secondary" id="backBtn" onclick="prevQuestion()" style="display:none;">← Back</button>
+    </div>
+  </div>
+
+  <!-- EMAIL GATE -->
+  <div class="screen" id="screen-email">
+    <div class="email-wrap">
+      <div class="email-tag">Almost there</div>
+      <h2 class="email-title">Where should we send your results?</h2>
+      <p class="email-body">Enter your name and email and we'll show you your Retail AI Readiness score across four areas — plus a free starter guide tailored to where you are right now.</p>
+      <div class="field-wrap">
+        <label class="field-label" for="nameInput">Your first name</label>
+        <input class="field-input" type="text" id="nameInput" placeholder="e.g. Sarah">
+      </div>
+      <div class="field-wrap">
+        <label class="field-label" for="emailInput">Your email</label>
+        <input class="field-input" type="email" id="emailInput" placeholder="you@email.com">
+        <div class="error-msg" id="emailError">Please enter a valid email address.</div>
+      </div>
+      <p class="privacy-note">No spam, ever. Your results are personal and we treat them that way.</p>
+      <div class="divider"></div>
+      <button class="btn-primary" onclick="submitEmail()">Show my results →</button>
+    </div>
+  </div>
+
+  <!-- RESULTS -->
+  <div class="screen" id="screen-results">
+    <div class="result-header">
+      <div class="result-tag">Your Retail AI Readiness Score</div>
+      <div class="result-score-line" id="resultTitle"></div>
+      <div class="result-summary" id="resultSummary"></div>
+      <div class="result-score-num" id="resultScoreNum"></div>
+    </div>
+
+    <!-- Per-track scores -->
+    <div class="track-scores" id="trackScores"></div>
+
+    <!-- Personalised cards -->
+    <div class="result-sections" id="resultSections"></div>
+
+    <div class="cta-block">
+      <div class="cta-tag">Free Resource</div>
+      <h3 class="cta-title">Get your free Retail AI Starter Guide</h3>
+      <p class="cta-body">A short, practical guide tailored to where you are right now — what's coming, what your real value is, and your first three moves.</p>
+      <div class="cta-buttons">
+        <button class="btn-primary" onclick="downloadGuide()">Download free guide →</button>
+        <button class="btn-secondary" onclick="learnMore()">See the full workbook</button>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script>
+const questions = [
+  { track: "Your Store or Business", trackIdx: 0, text: "How would you describe where your store or business is with AI right now?", options: ["We haven't talked about it or looked into it at all","We're aware it's coming but haven't done anything yet","We've started exploring or piloting something small","We're actively using or rolling out AI in parts of the operation"] },
+  { track: "Your Store or Business", trackIdx: 0, text: "When it comes to data in your store or business — sales figures, inventory, customer info — how organised and accessible is it?", options: ["It's scattered, manual, or inconsistent","Some of it is tracked but not in a usable way","Most of it is tracked and reasonably organised","It's clean, consistent, and easy to act on"] },
+  { track: "Your Store or Business", trackIdx: 0, text: "How clear are the processes in your store or business — who does what, how handoffs work, what the standards are?", options: ["Mostly in people's heads, not written down","Some things are documented but it's patchy","Most core processes are clear and followed","Processes are solid, documented, and regularly reviewed"] },
+  { track: "Your Store or Business", trackIdx: 0, text: "How would you describe the current attitude toward AI in your store or business — whether that's yours, your team's, or leadership's?", options: ["Not on the radar at all","There's awareness but a lot of uncertainty or resistance","There's interest but no clear plan yet","There's active intent or investment to adopt"] },
+  { track: "Your Personal AI Use", trackIdx: 1, text: "Have you personally used any AI tool — ChatGPT, Copilot, anything — even just once, for work or outside of it?", options: ["No, never tried any","I've heard of them but haven't tried","I've tried one or two out of curiosity","I use at least one regularly for personal or work tasks"] },
+  { track: "Your Personal AI Use", trackIdx: 1, text: "When you need to write something difficult at work — a complaint response, a report, a message to a difficult staff member — you:", options: ["Write it yourself and hope for the best","Ask a colleague to help or look for a template","Use a tool like ChatGPT to help draft or improve it","Have a personal system for handling these efficiently, AI or otherwise"] },
+  { track: "Your Personal AI Use", trackIdx: 1, text: "How do you currently handle repetitive documentation — shift reports, incident reports, performance notes?", options: ["Manually, every time, from scratch","I have templates I reuse","I use AI to help draft or summarise faster","I have a streamlined system that barely takes time"] },
+  { track: "Your Personal AI Use", trackIdx: 1, text: "When you come across something about AI — in the news, on social media, in a work context — you:", options: ["Scroll past it, doesn't feel relevant yet","Notice it but don't dig in","Read it and think about how it might apply to your work","Actively seek it out and share it with your team or peers"] },
+  { track: "What You Bring", trackIdx: 2, text: "When a customer situation goes beyond the standard response, you:", options: ["Escalate it to someone else","Handle it but feel uncertain","Usually find your way through","Read the situation fast and resolve it with confidence"] },
+  { track: "What You Bring", trackIdx: 2, text: "When you're helping someone learn something new — a team member, a new hire, or even yourself picking up a new skill — you:", options: ["Follow whatever structure or manual exists","Add your own experience but mostly stick to the format","Read the person or situation and adjust how you explain things","Naturally make things click in ways that go beyond any standard process"] },
+  { track: "What You Bring", trackIdx: 2, text: "When you need to make a call and there's no clear answer or playbook, you:", options: ["Hold off and look for guidance or precedent","Go with what's worked before","Weigh the options quickly and make a decision","Synthesise the situation fast, decide, and adapt as you go"] },
+  { track: "What You Bring", trackIdx: 2, text: "When a process or system breaks down, you:", options: ["Wait for someone else to fix it","Flag it and follow instructions","Improvise a fix and inform the relevant people","Diagnose it, fix it, and improve the process so it doesn't happen again"] },
+  { track: "Your Mindset", trackIdx: 3, text: "When you think about AI coming into retail, you see your role as:", options: ["Someone who waits to see what happens","Someone who adapts when it arrives","Someone who helps others understand and use it","Someone who actively shapes how it gets adopted"] },
+  { track: "Your Mindset", trackIdx: 3, text: "How confident are you that your skills and experience are still valuable as AI takes over more routine tasks?", options: ["Not confident — I worry about being replaced or left behind","Somewhat — I think I'm useful but I'm not sure for how long","Mostly confident — I know I bring things AI can't replicate","Very confident — I can clearly name what makes me irreplaceable"] },
+  { track: "Your Mindset", trackIdx: 3, text: "What best describes where you want to be in 12 months?", options: ["I just want to still have a job or a running business","I want to understand what's happening well enough to keep up","I want to be using AI to run my store or business smarter","I want to be the person others look to when it comes to AI in retail"] }
+];
+
+const trackMeta = [
+  { name: "Your Store or Business", low: "Just Starting", mid: "Finding Your Footing", high: "AI-Ready" },
+  { name: "Your Personal AI Use", low: "Curious", mid: "Exploring", high: "Fluent" },
+  { name: "What You Bring", low: "Developing", mid: "Emerging", high: "Seasoned" },
+  { name: "Your Mindset", low: "Watching", mid: "Shifting", high: "Leading" }
+];
+
+const trackCards = [
+  {
+    whereYouAre: [
+      { title: "The foundation isn't built yet", body: "Your store or business hasn't engaged with AI yet — and honestly, most haven't. Before AI can work reliably, you need cleaner data, clearer processes, and people who understand what's coming. That's your starting point." },
+      { title: "Aware and beginning to move", body: "You know something is shifting and you've started paying attention. Your data and processes have some structure but aren't fully ready. That's normal at this stage — the next move is getting the foundations cleaner." },
+      { title: "Your store is ready to scale", body: "Your data is organised, your processes are clear, and there's genuine intent to adopt AI. You're in the minority — and that puts you in a strong position to move faster than your competitors." }
+    ],
+    yourRealValue: [
+      { title: "Your knowledge of the operation is the asset", body: "Even without AI infrastructure, you understand how your store runs — the gaps, the workarounds, the people. That operational intelligence is exactly what's needed to make AI work when it arrives. Don't underestimate it." },
+      { title: "You're building in the right order", body: "Getting your data and processes right before adopting AI is the smart move. Retailers who skip this step end up automating broken systems. You're avoiding that trap." },
+      { title: "You've done the hard work others skip", body: "Clean data and solid processes are rarer than people think. Most retailers rush to adopt AI on shaky foundations and wonder why it doesn't work. Your foundation gives you a real advantage." }
+    ],
+    yourNextMove: [
+      { title: "Start with what you can see", body: "Before any tools or technology, map out where your data lives and where your processes break down. The Retail AI Pivot Map's Awareness phase will help you do this clearly and without overwhelm." },
+      { title: "Identify your highest-value AI use case", body: "Look at where routine, repetitive work is eating time — reports, stock checks, scheduling, communications. That's where AI will give you the fastest, clearest return. Pick one and start there." },
+      { title: "Lead the adoption, don't just enable it", body: "You have the foundation. Now it's about strategy — which tools, which sequence, which team members to bring along first. The Retail AI Pivot Map will help you build that plan." }
+    ]
+  },
+  {
+    whereYouAre: [
+      { title: "You haven't started yet — and that's okay", body: "Most retail professionals haven't personally used AI tools yet. The infrastructure hasn't been handed to them and no one's made it feel urgent or relevant. This quiz is your first step toward changing that." },
+      { title: "You're experimenting and finding your way", body: "You've tried a tool or two, maybe used AI to help with a difficult email or a report. You're past the starting line. Now it's about building enough fluency that it becomes genuinely useful in your day-to-day." },
+      { title: "You're already ahead of most of your peers", body: "You're using AI regularly for your own work — drafting, summarising, problem-solving. That personal fluency is a real advantage, and it's exactly what makes the difference when AI adoption hits at the organisational level." }
+    ],
+    yourRealValue: [
+      { title: "Curiosity is the real skill", body: "You don't need to be technical to use AI well. The ability to ask good questions, recognise useful output, and apply it to your context — that's what matters. And you already do that in your work every day." },
+      { title: "Every use builds fluency", body: "The more you use AI for real tasks — even small ones — the faster you develop an instinct for where it helps and where it doesn't. That practical judgment is more valuable than any training course." },
+      { title: "You already know what good output looks like", body: "Years in retail have trained you to spot what's practical and what isn't. That quality filter is exactly what you need when working with AI — you know when to trust it and when to push back." }
+    ],
+    yourNextMove: [
+      { title: "Start with one task you do every week", body: "Pick the most repetitive, draining piece of writing or documentation in your week — a report, a message, a summary — and try doing it with ChatGPT once. That's your entry point." },
+      { title: "Make it a habit, not a test", body: "You've tried AI a few times. Now commit to using it for one specific task consistently for two weeks. That's how fluency actually builds — not from trying everything, but from getting good at one thing." },
+      { title: "Start teaching others what you know", body: "Your personal AI fluency is an asset to your team and your organisation. Start sharing what works — even informally. That positions you as a go-to person as adoption accelerates." }
+    ]
+  },
+  {
+    whereYouAre: [
+      { title: "Your strengths are real but unnamed", body: "You have experience and instincts built over years in retail — but you may not have fully articulated what those are or why they matter. That's not a gap in your skills. It's a gap in how you've framed them." },
+      { title: "Your skills are real and developing", body: "You're building confidence in your judgment, your people skills, and your ability to navigate complexity. These are exactly the skills that become more valuable as AI handles more of the routine work." },
+      { title: "Your human skills are your competitive edge", body: "The way you read situations, lead people, make decisions under pressure, and fix what's broken — these are not small things. They're the capabilities that AI cannot replicate and that retailers will increasingly pay for." }
+    ],
+    yourRealValue: [
+      { title: "AI handles the lookup. You handle the relationship.", body: "The empathy, judgment, and contextual intelligence you bring to customer situations, team dynamics, and operational problems are irreplaceable. Your job is to name them clearly so others can see what you see." },
+      { title: "Judgment plus tools is a powerful combination", body: "As you build AI fluency alongside your existing people and operational skills, you become significantly more capable than either alone. That's the combination retailers will need most in the next few years." },
+      { title: "You are the thing AI is trying to replicate", body: "The instincts, adaptability, and human intelligence you've built in retail are exactly what AI is designed to assist — not replace. You're not competing with the tool. You're the one who knows how to use it well." }
+    ],
+    yourNextMove: [
+      { title: "Name what you actually do", body: "Take 20 minutes and write down the last five difficult situations you navigated at work — with customers, with your team, with a broken process. What did you actually do? That's your skill set, made visible." },
+      { title: "Connect your skills to AI's limitations", body: "For each strength you have — reading people, making judgment calls, adapting on the fly — ask: can AI do this? The answer is mostly no. That clarity is what makes you confident rather than anxious about the shift." },
+      { title: "Use your skills to lead adoption", body: "Your ability to read people and navigate complexity is exactly what's needed to bring a team along through change. That's a leadership role that doesn't require technical knowledge — just the skills you already have." }
+    ]
+  },
+  {
+    whereYouAre: [
+      { title: "You're in wait-and-see mode", body: "You're aware something is shifting but you're holding back — watching how it unfolds, letting others go first. That's understandable. But the longer the wait, the bigger the gap between where you are and where the industry is heading." },
+      { title: "You're starting to lean in", body: "You're moving from observer to participant. You're thinking about your role, building awareness, and starting to see how this affects you personally. That shift in orientation is more important than any specific skill." },
+      { title: "You're ready to lead", body: "You're not just adapting to change — you're thinking about how to shape it. That mindset is rare and genuinely valuable. The retailers who come out ahead will be led by people who think the way you do." }
+    ],
+    yourRealValue: [
+      { title: "Awareness is the first move", body: "Recognising that something is happening — even if you're not sure what to do yet — puts you ahead of people who are still in denial. Your willingness to look clearly at the situation is the foundation everything else builds on." },
+      { title: "Openness is an underrated skill", body: "The people who adapt best aren't the most technical — they're the most open. Your growing willingness to engage with change, ask questions, and try new things is the mindset that makes everything else possible." },
+      { title: "Your orientation shapes everyone around you", body: "How you think about AI influences how your team thinks about it. A leader who approaches it with curiosity and confidence — rather than anxiety or hype — creates the conditions for genuine, useful adoption." }
+    ],
+    yourNextMove: [
+      { title: "Get informed before you get overwhelmed", body: "You don't need to know everything. You need a clear enough picture of what's actually changing in retail — and what isn't — to stop feeling like it's all happening without you. The Awareness phase of the workbook starts here." },
+      { title: "Decide what kind of person you want to be in this shift", body: "Adapter, understander, leader — all are valid. But deciding intentionally, rather than drifting, changes how you show up. The Acceptance phase of the workbook helps you make that choice consciously." },
+      { title: "Start acting like the leader you already are", body: "You have the mindset. Now it needs to become visible — in how you talk about AI with your team, how you position yourself in conversations with leadership, and how you build your personal brand in the industry." }
+    ]
+  }
+];
+
+const overallLevels = [
+  { range: [15,27], label: "Early <span style='color:var(--gold)'>Awareness</span>", summary: "You're at the start of this journey — and that's exactly where most retail professionals are right now. AI adoption in retail is still early and uneven. The important thing is that you're asking the right questions." },
+  { range: [28,42], label: "Building <span style='color:var(--gold)'>Readiness</span>", summary: "You're aware of what's shifting and you're starting to move. You have more going for you than you realise — the next step is connecting your existing strengths to a clear, practical strategy." },
+  { range: [43,60], label: "Ready to <span style='color:var(--gold)'>Advance</span>", summary: "You're already moving in the right direction. Strong instincts, real skills, growing fluency. The question now isn't whether you can handle this shift — it's how you lead it." }
+];
+
+let currentQ = 0;
+let userAnswers = new Array(questions.length).fill(null);
+let trackScores = [0, 0, 0, 0]; // Store, Personal, Value, Mindset
+
+function startQuiz() {
+  showScreen('screen-questions');
+  document.getElementById('progressWrap').style.display = 'block';
+  loadQuestion();
+}
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+
+function loadQuestion() {
+  const q = questions[currentQ];
+  document.getElementById('qCounter').innerText = `Question ${currentQ + 1} of ${questions.length}`;
+  document.getElementById('qTrack').innerText = q.track;
+  document.getElementById('qText').innerText = q.text;
+  
+  // Progress bar
+  const progressPercent = ((currentQ) / questions.length) * 100;
+  document.getElementById('progressFill').style.width = `${progressPercent}%`;
+
+  const optionsWrap = document.getElementById('optionsWrap');
+  optionsWrap.innerHTML = '';
+
+  const alphabet = ['A', 'B', 'C', 'D'];
+  q.options.forEach((opt, idx) => {
+    const btn = document.createElement('button');
+    btn.className = 'option';
+    if(userAnswers[currentQ] === idx) btn.classList.add('selected');
+    
+    btn.innerHTML = `<div class="option-marker">${alphabet[idx]}</div><div>${opt}</div>`;
+    btn.onclick = () => selectOption(idx);
+    optionsWrap.appendChild(btn);
+  });
+
+  document.getElementById('backBtn').style.display = currentQ > 0 ? 'inline-block' : 'none';
+  document.getElementById('nextBtn').disabled = userAnswers[currentQ] === null;
+}
+
+function selectOption(idx) {
+  userAnswers[currentQ] = idx;
+  document.querySelectorAll('.option').forEach((b, i) => {
+    if(i === idx) b.classList.add('selected');
+    else b.classList.remove('selected');
+  });
+  document.getElementById('nextBtn').disabled = false;
+  
+  // Auto advance slightly delayed for natural feel
+  setTimeout(() => { nextQuestion(); }, 350);
+}
+
+function nextQuestion() {
+  if (userAnswers[currentQ] === null) return;
+  if (currentQ < questions.length - 1) {
+    currentQ++;
+    loadQuestion();
+  } else {
+    document.getElementById('progressFill').style.width = '100%';
+    showScreen('screen-email');
+  }
+}
+
+function prevQuestion() {
+  if (currentQ > 0) {
+    currentQ--;
+    loadQuestion();
+  }
+}
+
+function getTierIndex(score, maxScore) {
+  // Calculates low (0), mid (1), high (2) tiers based on scores
+  const percent = score / maxScore;
+  if (percent <= 0.5) return 0;
+  if (percent <= 0.8) return 1;
+  return 2;
+}
+
+function submitEmail() {
+  const email = document.getElementById('emailInput').value;
+  const name = document.getElementById('nameInput').value || "there";
+  
+  if(!email || !email.includes('@')) {
+    document.getElementById('emailError').style.display = 'block';
+    return;
+  }
+  document.getElementById('emailError').style.display = 'none';
+  document.getElementById('progressWrap').style.display = 'none';
+
+  // Calculate scoring allocations
+  trackScores = [0, 0, 0, 0];
+  userAnswers.forEach((ansIdx, qIdx) => {
+    const scoreAllocated = ansIdx + 1; // mapping responses 0-3 to points 1-4
+    const trackIdx = questions[qIdx].trackIdx;
+    trackScores[trackIdx] += scoreAllocated;
+  });
+
+  const totalScore = trackScores.reduce((a, b) => a + b, 0);
+
+  // Render Overall Outcomes
+  const level = overallLevels.find(l => totalScore >= l.range[0] && totalScore <= l.range[1]) || overallLevels[1];
+  document.getElementById('resultTitle').innerHTML = level.label;
+  document.getElementById('resultSummary').innerText = `Hi ${name}, ${level.summary}`;
+  document.getElementById('resultScoreNum').innerText = totalScore;
+
+  // Render Sub-Track Rating Grid
+  const trackScoresWrap = document.getElementById('trackScores');
+  trackScoresWrap.innerHTML = '';
+  
+  trackScores.forEach((score, idx) => {
+    const meta = trackMeta[idx];
+    const maxPossible = idx === 3 ? 12 : 16; // Track 3 has 3 questions, others have 4
+    const tierIdx = getTierIndex(score, maxPossible);
+    const labelRating = tierIdx === 0 ? meta.low : (tierIdx === 1 ? meta.mid : meta.high);
+
+    const card = document.createElement('div');
+    card.className = 'track-score-card';
+    card.innerHTML = `
+      <div class="ts-label">${meta.name}</div>
+      <div class="ts-rating">${labelRating} <span>(${score}/${maxPossible})</span></div>
+    `;
+    trackScoresWrap.appendChild(card);
+  });
+
+  // Render Section Insights
+  const sectionsWrap = document.getElementById('resultSections');
+  sectionsWrap.innerHTML = '';
+
+  const sectionLabels = ["Operational Readiness", "Digital Fluency", "Human Capabilities", "Strategic Alignment"];
+  
+  trackScores.forEach((score, idx) => {
+    const maxPossible = idx === 3 ? 12 : 16;
+    const tierIdx = getTierIndex(score, maxPossible);
+    const content = trackCards[idx];
+
+    const sec = document.createElement('div');
+    sec.className = 'result-section';
+    sec.innerHTML = `
+      <div class="rs-label">Focus Area ${idx+1}: ${sectionLabels[idx]}</div>
+      <div class="rs-title" style="margin-top:14px; font-weight:500;">Where You Are: ${content.whereYouAre[tierIdx].title}</div>
+      <p class="rs-body" style="margin-bottom:18px;">${content.whereYouAre[tierIdx].body}</p>
+      <div class="rs-title" style="font-weight:500;">Your Real Value: ${content.yourRealValue[tierIdx].title}</div>
+      <p class="rs-body" style="margin-bottom:18px;">${content.yourRealValue[tierIdx].body}</p>
+      <div class="rs-title" style="font-weight:500;">Your Next Move: ${content.yourNextMove[tierIdx].title}</div>
+      <p class="rs-body">${content.yourNextMove[tierIdx].body}</p>
+    `;
+    sectionsWrap.appendChild(sec);
+  });
+
+  showScreen('screen-results');
+}
+
+function downloadGuide() {
+  alert("Redirecting to your hosted Starter Guide PDF...");
+}
+
+function learnMore() {
+  alert("Redirecting to the full workbook framework on Gumroad...");
+}
+</script>
+
+</body>
+</html>

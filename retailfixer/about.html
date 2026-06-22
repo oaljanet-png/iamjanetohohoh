@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#fdf6ef">
+<title>About Janet Oh — Retail Fixer</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap');
+
+  :root {
+    --bg: #fdf6ef;
+    --blush: #f2c4b0;
+    --rose: #e8927a;
+    --dusty: #d4756a;
+    --gold: #c9a96e;
+    --text: #2d1f1a;
+    --text-mid: #6b4438;
+    --text-light: #b08070;
+    --card: #fffaf6;
+    --card-border: #f0ddd0;
+    --green: #5a9e7a;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: var(--bg) !important; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 48px 20px 72px;
+    background: var(--bg);
+    background-image:
+      radial-gradient(circle at 15% 15%, rgba(242,196,176,0.35) 0%, transparent 45%),
+      radial-gradient(circle at 85% 85%, rgba(201,169,110,0.2) 0%, transparent 45%);
+  }
+
+  /* NAV */
+  .nav {
+    width: 100%;
+    max-width: 680px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    margin-bottom: 52px;
+    animation: fadeUp 0.6s ease both;
+  }
+  .nav-logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text);
+    text-decoration: none;
+  }
+  .nav-logo span { font-style: italic; color: var(--rose); }
+  .nav-links { display: flex; gap: 24px; }
+  .nav-link {
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--text-light);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .nav-link:hover { color: var(--rose); }
+  .nav-link.active { color: var(--rose); border-bottom: 2px solid var(--rose); padding-bottom: 2px; }
+  .nav-back {
+    font-size: 13px; font-weight: 600; letter-spacing: 1.5px;
+    text-transform: uppercase; color: var(--text-light);
+    text-decoration: none; transition: color 0.2s;
+  }
+  .nav-back:hover { color: var(--rose); }
+
+  /* HERO */
+  .hero {
+    width: 100%;
+    max-width: 680px;
+    display: flex;
+    align-items: center;
+    gap: 40px;
+    margin-bottom: 60px;
+    animation: fadeUp 0.6s 0.1s ease both;
+  }
+  .hero-photo {
+    width: 160px;
+    height: 160px;
+    border-radius: 50%;
+    object-fit: cover;
+    object-position: center top;
+    border: 4px solid var(--blush);
+    box-shadow: 0 8px 32px rgba(180,100,80,0.15);
+    flex-shrink: 0;
+  }
+  .hero-text { flex: 1; }
+  .hero-tag {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--rose);
+    background: rgba(232,146,122,0.12);
+    padding: 5px 14px;
+    border-radius: 20px;
+    margin-bottom: 14px;
+  }
+  .hero-name {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(32px, 7vw, 48px);
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1.1;
+    margin-bottom: 10px;
+  }
+  .hero-title {
+    font-size: 16px;
+    color: var(--text-mid);
+    line-height: 1.65;
+    font-weight: 300;
+    font-style: italic;
+  }
+
+  /* SECTIONS */
+  .section {
+    width: 100%;
+    max-width: 680px;
+    margin-bottom: 48px;
+    animation: fadeUp 0.6s 0.2s ease both;
+  }
+
+  .section-label {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 20px;
+  }
+  .section-label-line {
+    flex: 1;
+    height: 1px;
+    background: var(--blush);
+  }
+  .section-label-text {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--rose);
+    white-space: nowrap;
+  }
+
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(24px, 5vw, 32px);
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 20px;
+    line-height: 1.25;
+  }
+
+  .section-body {
+    font-size: 17px;
+    line-height: 1.85;
+    color: var(--text-mid);
+    font-weight: 300;
+  }
+  .section-body p + p { margin-top: 16px; }
+
+  /* CREDENTIALS */
+  .credentials {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 24px;
+    justify-content: center;
+  }
+  .cred-badge {
+    padding: 8px 16px;
+    background: white;
+    border: 1.5px solid var(--card-border);
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-mid);
+    box-shadow: 0 2px 8px rgba(180,100,80,0.06);
+  }
+
+  /* HIGHLIGHTS */
+  .highlights {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    margin-top: 8px;
+  }
+  @media (min-width: 540px) {
+    .highlights { grid-template-columns: repeat(4, 1fr); }
+  }
+  .highlight-card {
+    background: var(--card);
+    border: 1.5px solid var(--card-border);
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 2px 12px rgba(180,100,80,0.07);
+    text-align: center;
+  }
+  .highlight-number {
+    font-family: 'Playfair Display', serif;
+    font-size: 36px;
+    font-weight: 700;
+    color: var(--rose);
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+  .highlight-label {
+    font-size: 13px;
+    color: var(--text-mid);
+    font-weight: 400;
+    line-height: 1.5;
+  }
+
+  /* TESTIMONIALS */
+  .testimonials {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-top: 8px;
+  }
+  .testimonial {
+    background: var(--card);
+    border: 1.5px solid var(--card-border);
+    border-left: 4px solid var(--blush);
+    border-radius: 8px;
+    padding: 24px 24px 20px;
+    box-shadow: 0 2px 12px rgba(180,100,80,0.07);
+  }
+  .testimonial-quote {
+    font-size: 16px;
+    line-height: 1.75;
+    color: var(--text-mid);
+    font-style: italic;
+    font-weight: 300;
+    margin-bottom: 14px;
+  }
+  .testimonial-author {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-light);
+    letter-spacing: 0.5px;
+  }
+
+  /* VISION CALLOUT */
+  .vision-callout {
+    background: linear-gradient(135deg, #fff6f0, #ffeee6);
+    border: 1.5px solid var(--blush);
+    border-radius: 12px;
+    padding: 32px;
+    margin-top: 24px;
+    box-shadow: 0 4px 20px rgba(180,100,80,0.1);
+  }
+  .vision-callout p {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(18px, 3.5vw, 22px);
+    font-style: italic;
+    color: var(--dusty);
+    line-height: 1.7;
+    text-align: center;
+  }
+
+  /* CTA */
+  .cta-section {
+    width: 100%;
+    max-width: 680px;
+    text-align: center;
+    animation: fadeUp 0.6s 0.3s ease both;
+  }
+  .cta-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(22px, 5vw, 30px);
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 8px;
+  }
+  .cta-sub {
+    font-size: 16px;
+    color: var(--text-light);
+    margin-bottom: 24px;
+    font-weight: 300;
+  }
+  .cta-buttons {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .cta-btn {
+    display: inline-block;
+    padding: 16px 28px;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    text-decoration: none;
+    border-radius: 8px;
+    transition: all 0.2s;
+  }
+  .cta-btn-primary {
+    background: var(--rose);
+    color: white;
+    box-shadow: 0 4px 16px rgba(232,146,122,0.3);
+  }
+  .cta-btn-primary:hover { background: var(--dusty); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(232,146,122,0.4); }
+  .cta-btn-secondary {
+    background: white;
+    color: var(--rose);
+    border: 2px solid var(--blush);
+    box-shadow: 0 2px 8px rgba(180,100,80,0.08);
+  }
+  .cta-btn-secondary:hover { border-color: var(--rose); transform: translateY(-2px); }
+
+  /* FOOTER */
+  .footer {
+    margin-top: 52px;
+    width: 100%;
+    max-width: 680px;
+    border-top: 1px solid var(--blush);
+    padding-top: 28px;
+    text-align: center;
+  }
+  .footer-credit {
+    font-size: 13px;
+    color: var(--text-light);
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  @media (max-width: 520px) {
+    .hero { flex-direction: column; text-align: center; align-items: center; }
+    .nav-links { gap: 14px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="nav-links">
+    <a href="../index.html" class="nav-back">← Universe</a>
+    <a href="about.html" class="nav-link active">About</a>
+    <a href="index.html" class="nav-link">Services</a>
+    <a href="programmes.html" class="nav-link">Programmes</a>
+    <a href="aireadinessquiz.html" class="nav-link">AI Quiz</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <img src="profile.png" alt="Janet Oh" class="hero-photo">
+  <div class="hero-text">
+    <div class="hero-tag">Trainer · Consultant · Facilitator</div>
+    <h1 class="hero-name">Janet Oh</h1>
+    <p class="hero-title">Retail practitioner with 15+ years on the floor.<br>Working with retail businesses to stop the leaks and build the growth.</p>
+  </div>
+</div>
+
+<!-- THE JOURNEY -->
+<section class="section">
+  <div class="section-label">
+    <div class="section-label-line"></div>
+    <div class="section-label-text">The Journey</div>
+    <div class="section-label-line"></div>
+  </div>
+  <div class="section-body">
+    <p>I've spent over 15 years on the retail floor — from H&M, where I led visual merchandising across 10 stores and achieved a global #1 performance ranking, to Louis Vuitton, Nespresso, Foot Locker, and Castlery. Across every role, I was the person who walked into a store, figured out what wasn't working, and fixed it.</p>
+    <p>I've redesigned KPI systems, overhauled stock-takes from a week-long exercise down to hours, built training programmes that moved conversion rates by 5.5%, and led teams through record-breaking sales periods. I also led the operational preparation for the first Louis Vuitton chocolate pilot store in Southeast Asia.</p>
+    <p>Today I'm an Associate Trainer with the Singapore Institute of Retail Studies (SIRS), delivering programmes in Visual Merchandising and Retail Excellence — and a Visual Merchandising Consultant for the Enhanced Heartland Visual Merchandising Programme (EVMHP), working directly with neighbourhood retailers to improve their store presentation and commercial impact.</p>
+  </div>
+
+  <div class="credentials">
+    <div class="cred-badge">ACLP 2.0 Certified</div>
+    <div class="cred-badge">Associate Trainer, SIRS</div>
+    <div class="cred-badge">VM Consultant, EVMHP</div>
+    <div class="cred-badge">15+ Years Retail</div>
+    <div class="cred-badge">WSQ Trainer</div>
+  </div>
+</section>
+
+<!-- HIGHLIGHTS -->
+<section class="section">
+  <div class="highlights">
+    <div class="highlight-card">
+      <div class="highlight-number">15+</div>
+      <div class="highlight-label">Years across luxury, fast fashion, furniture & FMCG</div>
+    </div>
+    <div class="highlight-card">
+      <div class="highlight-number">#1</div>
+      <div class="highlight-label">Global VM ranking across 10 H&M stores</div>
+    </div>
+    <div class="highlight-card">
+      <div class="highlight-number">5.5%</div>
+      <div class="highlight-label">Conversion rate improvement through training</div>
+    </div>
+    <div class="highlight-card">
+      <div class="highlight-number">6.28%</div>
+      <div class="highlight-label">Above previous record-breaking sales high</div>
+    </div>
+  </div>
+</section>
+
+<!-- WHAT I BELIEVE -->
+<section class="section">
+  <div class="section-label">
+    <div class="section-label-line"></div>
+    <div class="section-label-text">What I Believe</div>
+    <div class="section-label-line"></div>
+  </div>
+  <div class="section-body">
+    <p>Small businesses are run by some of the hardest working people I've ever met. But hard work alone isn't enough when the systems aren't there — the SOPs, the buying decisions, the customer data, the team structure. These aren't complicated fixes. Small tweaks make big differences.</p>
+    <p>I've seen money leak because of simple gaps — the wrong stock quantities, unclear roles, a customer profile nobody sat down to define. These are fixable. And fixing them doesn't have to be expensive or overwhelming.</p>
+    <p>I also believe that learning should never feel scary. Many business owners didn't have great experiences in school, and that can make asking for help feel like admitting failure. It's not. Getting support is the smartest move you can make — and I make sure every session feels safe, practical, and worth your time.</p>
+    <p>I learn just as much from the people I work with as they do from me. Every shop owner I've met has taught me something. That's what keeps this work meaningful.</p>
+  </div>
+
+  <div class="vision-callout">
+    <p>"Small tweaks make big differences. And every business owner deserves support that feels safe to ask for."</p>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="section">
+  <div class="section-label">
+    <div class="section-label-line"></div>
+    <div class="section-label-text">What Others Say</div>
+    <div class="section-label-line"></div>
+  </div>
+  <div class="testimonials">
+    <div class="testimonial">
+      <div class="testimonial-quote">"The retail training led by Janet was highly effective and engaging. It started with a strong focus on customer needs, expectations, and experiences, which set a clear and practical foundation. The sessions were interactive, with well-designed activities, good Q&A, and hands-on system demos."</div>
+      <div class="testimonial-author">— Yao Zhang, Vice President of Operations</div>
+    </div>
+    <div class="testimonial">
+      <div class="testimonial-quote">"Janet delivered an extremely engaging training session and created a positive learning environment for everyone. The activities were well organised and encouraged us to discuss ideas and present as a group, which made the session interactive and practical."</div>
+      <div class="testimonial-author">— Victoria Fong, Senior Demand Planner</div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<div class="cta-section">
+  <h2 class="cta-title">Ready to work together?</h2>
+  <p class="cta-sub">DM me on any of these platforms to get started.</p>
+  <div class="cta-buttons">
+    <a class="cta-btn cta-btn-primary" href="https://instagram.com/retailfixer" target="_blank">📷 Instagram</a>
+    <a class="cta-btn cta-btn-secondary" href="https://tiktok.com/@retailfixer" target="_blank">🎵 TikTok</a>
+    <a class="cta-btn cta-btn-secondary" href="https://www.linkedin.com/in/janet-oh/" target="_blank">💼 LinkedIn</a>
+  </div>
+</div>
+
+<div class="footer">
+  <p class="footer-credit">© 2026 Janet Oh · Retail Fixer · Singapore</p>
+</div>
+
+</body>
+</html>

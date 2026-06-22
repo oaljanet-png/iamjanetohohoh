@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Programmes — Retail Fixer</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap');
+
+  :root {
+    --bg: #fdf6ef; --rose: #e8927a; --dusty: #d4756a; --gold: #c9a96e;
+    --text: #2d1f1a; --text-mid: #6b4438; --text-light: #b08070;
+    --blush: #f2c4b0; --card: #fffaf6; --card-border: #f0ddd0; --green: #5a9e7a;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: var(--bg) !important; min-height: 100vh; }
+  body {
+    font-family: 'DM Sans', sans-serif; color: var(--text);
+    min-height: 100vh; display: flex; flex-direction: column;
+    align-items: center; padding: 36px 20px 64px;
+    background: var(--bg);
+    background-image:
+      radial-gradient(circle at 15% 15%, rgba(242,196,176,0.35) 0%, transparent 45%),
+      radial-gradient(circle at 85% 85%, rgba(201,169,110,0.2) 0%, transparent 45%);
+  }
+
+  /* NAV */
+  nav {
+    width: 100%; max-width: 640px;
+    display: flex; align-items: center; justify-content: flex-end;
+    margin-bottom: 48px;
+  }
+  .nav-links { display: flex; gap: 24px; }
+  .nav-back {
+    font-size: 12px; font-weight: 600; letter-spacing: 1.5px;
+    text-transform: uppercase; color: var(--text-light);
+    text-decoration: none; transition: color 0.2s;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .nav-back:hover { color: var(--rose); }
+  .nav-link {
+    font-size: 13px; font-weight: 600; letter-spacing: 1.5px;
+    text-transform: uppercase; color: var(--text-light);
+    text-decoration: none; transition: color 0.2s;
+  }
+  .nav-link:hover { color: var(--rose); }
+  .nav-link.active { color: var(--rose); border-bottom: 2px solid var(--rose); padding-bottom: 2px; }
+
+  /* CONTENT */
+  .content {
+    width: 100%; max-width: 580px;
+    display: flex; flex-direction: column; align-items: center;
+    text-align: center;
+    padding: 20px 0 32px;
+  }
+
+  .header-tag {
+    display: inline-block; font-size: 11px; font-weight: 600;
+    letter-spacing: 3px; text-transform: uppercase;
+    color: var(--rose); background: rgba(232,146,122,0.12);
+    padding: 6px 16px; border-radius: 20px; margin-bottom: 20px;
+  }
+
+  h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(44px, 10vw, 72px);
+    font-weight: 700; color: var(--text); line-height: 1.15;
+    margin-bottom: 20px;
+  }
+  h1 span { font-style: italic; color: var(--rose); }
+
+  .desc {
+    font-size: 17px; color: var(--text-mid); font-weight: 300;
+    line-height: 1.75; max-width: 460px; margin-bottom: 40px;
+  }
+
+  .coming-tag {
+    font-family: 'Playfair Display', serif;
+    font-size: 17px; font-style: italic;
+    color: var(--gold); margin-bottom: 40px;
+  }
+
+  /* PREVIEW CARDS */
+  .preview {
+    width: 100%; display: flex; flex-direction: column; gap: 14px;
+    margin-bottom: 48px;
+  }
+  .preview-card {
+    background: var(--card); border: 1.5px solid var(--card-border);
+    border-radius: 12px; padding: 20px 24px; text-align: left;
+    box-shadow: 0 2px 12px rgba(180,100,80,0.07);
+    opacity: 0.6;
+    display: flex; align-items: center; gap: 16px;
+  }
+  .preview-icon {
+    font-size: 28px; flex-shrink: 0;
+  }
+  .preview-text {}
+  .preview-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 18px; font-weight: 700; color: var(--text);
+    margin-bottom: 4px;
+  }
+  .preview-sub {
+    font-size: 13px; color: var(--text-light); font-weight: 300;
+  }
+  .preview-badge {
+    margin-left: auto; flex-shrink: 0;
+    font-size: 10px; font-weight: 600; letter-spacing: 2px;
+    text-transform: uppercase; color: var(--text-light);
+    border: 1px solid var(--card-border);
+    padding: 4px 10px; border-radius: 20px;
+  }
+
+  .notify-note {
+    font-size: 15px; color: var(--text-light); font-weight: 300;
+    line-height: 1.65; margin-bottom: 28px;
+  }
+  .notify-note a { color: var(--rose); text-decoration: none; font-weight: 500; }
+  .notify-note a:hover { text-decoration: underline; }
+
+  /* CTA */
+  .cta-section {
+    width: 100%;
+    max-width: 680px;
+    text-align: center;
+    animation: fadeUp 0.6s 0.3s ease both;
+  }
+  .cta-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(22px, 5vw, 30px);
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 8px;
+  }
+  .cta-sub {
+    font-size: 16px;
+    color: var(--text-light);
+    margin-bottom: 24px;
+    font-weight: 300;
+  }
+  .cta-buttons {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .cta-btn {
+    display: inline-block;
+    padding: 16px 28px;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    text-decoration: none;
+    border-radius: 8px;
+    transition: all 0.2s;
+  }
+  .cta-btn-primary {
+    background: var(--rose);
+    color: white;
+    box-shadow: 0 4px 16px rgba(232,146,122,0.3);
+  }
+  .cta-btn-primary:hover { background: var(--dusty); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(232,146,122,0.4); }
+  .cta-btn-secondary {
+    background: white;
+    color: var(--rose);
+    border: 2px solid var(--blush);
+    box-shadow: 0 2px 8px rgba(180,100,80,0.08);
+  }
+  .cta-btn-secondary:hover { border-color: var(--rose); transform: translateY(-2px); }
+
+  /* FOOTER */
+  .footer {
+    margin-top: 52px;
+    width: 100%;
+    max-width: 680px;
+    border-top: 1px solid var(--blush);
+    padding-top: 28px;
+    text-align: center;
+  }
+  .footer-credit {
+    font-size: 13px;
+    color: var(--text-light);
+  }
+    margin-top: 52px;
+    width: 100%;
+    max-width: 640px;
+    border-top: 1px solid var(--blush);
+    padding-top: 28px;
+    text-align: center;
+    width: 100%; max-width: 640px;
+    border-top: 1px solid var(--blush);
+    text-align: center;
+  }
+  .footer-credit { font-size: 13px; color: var(--text-light); }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-links">
+    <a href="../index.html" class="nav-back">← Universe</a>
+    <a href="about.html" class="nav-link">About</a>
+    <a href="index.html" class="nav-link">Services</a>
+    <a href="programmes.html" class="nav-link active">Programmes</a>
+    <a href="aireadinessquiz.html" class="nav-link">AI Quiz</a>
+  </div>
+</nav>
+
+<div class="content">
+  <div class="header-tag">Retail Fixer · Programmes</div>
+  <h1>The Full <span>Fix.</span></h1>
+  <p class="desc">Ready-made programmes that take your store through the complete journey — from diagnosis to transformation. Built for retail businesses that want structured, end-to-end support.</p>
+  <p class="coming-tag">✦ Coming soon — being built right now ✦</p>
+
+  <div class="preview">
+    <div class="preview-card">
+      <div class="preview-icon">🛍️</div>
+      <div class="preview-text">
+        <div class="preview-title">The Retail Starter Fix</div>
+        <div class="preview-sub">Audit + report + one tutoring session + one team training</div>
+      </div>
+      <span class="preview-badge">Coming Soon</span>
+    </div>
+    <div class="preview-card">
+      <div class="preview-icon">📈</div>
+      <div class="preview-text">
+        <div class="preview-title">The Full Fix Programme</div>
+        <div class="preview-sub">Complete end-to-end system — audit, tutoring, training, follow-up</div>
+      </div>
+      <span class="preview-badge">Coming Soon</span>
+    </div>
+  </div>
+
+  <p class="notify-note">In the meantime, all services are available <a href="index.html">à la carte</a>.</p>
+</div>
+
+<!-- CTA -->
+<div class="cta-section">
+  <h2 class="cta-title">Ready to work together?</h2>
+  <p class="cta-sub">DM me on any of these platforms to get started.</p>
+  <div class="cta-buttons">
+    <a class="cta-btn cta-btn-primary" href="https://instagram.com/retailfixer" target="_blank">📷 Instagram</a>
+    <a class="cta-btn cta-btn-secondary" href="https://tiktok.com/@retailfixer" target="_blank">🎵 TikTok</a>
+    <a class="cta-btn cta-btn-secondary" href="https://www.linkedin.com/in/janet-oh/" target="_blank">💼 LinkedIn</a>
+  </div>
+</div>
+
+<div class="footer">
+  <p class="footer-credit">© 2026 Janet Oh · Retail Fixer · Singapore</p>
+</div>
+
+</body>
+</html>

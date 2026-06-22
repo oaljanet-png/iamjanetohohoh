@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0a0618">
+<title>Janet Oh — Welcome to My Universe</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:wght@300;400;500&display=swap');
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: #0a0618 !important; min-height: 100vh; overflow: hidden; }
+  body { font-family: 'DM Sans', sans-serif; color: #f5f0ff; min-height: 100vh; position: relative; }
+
+  #stars { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+  .nebula {
+    position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    background:
+      radial-gradient(ellipse 55% 35% at 15% 25%, rgba(139,92,246,0.18) 0%, transparent 65%),
+      radial-gradient(ellipse 45% 55% at 85% 75%, rgba(192,132,252,0.12) 0%, transparent 65%),
+      radial-gradient(ellipse 40% 25% at 55% 5%, rgba(99,102,241,0.1) 0%, transparent 55%);
+    transition: transform 0.6s ease;
+  }
+
+  .header {
+    position: fixed; top: 28px; left: 50%; transform: translateX(-50%);
+    text-align: center; z-index: 20; pointer-events: none;
+    animation: riseIn 1s ease both; width: 92%;
+    transition: opacity 0.4s;
+  }
+  .header.hidden { opacity: 0; }
+  .header-title {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(20px, 4.5vw, 38px);
+    font-weight: 800; line-height: 1.15;
+    color: #ffffff;
+    text-shadow: 0 0 10px rgba(200,180,255,0.9), 0 0 24px rgba(180,150,255,0.6), 0 0 2px #fff;
+    letter-spacing: -0.5px;
+  }
+  .header-sub {
+    font-size: clamp(13px, 2.5vw, 17px);
+    color: #c084fc;
+    margin-top: 10px;
+    font-weight: 400;
+    letter-spacing: 3px;
+    text-shadow: 0 0 12px rgba(192,132,252,0.5);
+  }
+
+  /* main scene canvas — pointer events on so clicks register */
+  #scene { position: fixed; inset: 0; z-index: 10; cursor: pointer; }
+
+  /* ZOOMED INFO OVERLAY */
+  .zoom-overlay {
+    position: fixed; inset: 0; z-index: 40;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: flex-end;
+    padding-bottom: 60px;
+    pointer-events: none;
+    opacity: 0; transition: opacity 0.5s;
+  }
+  .zoom-overlay.show { opacity: 1; }
+  /* only the buttons and desc get pointer events, not the full overlay */
+  .zoom-desc, .zoom-buttons, .btn-back-universe { pointer-events: all; }
+
+  .zoom-desc {
+    font-size: clamp(16px, 3.5vw, 22px);
+    color: #e8e0ff;
+    font-weight: 300; line-height: 1.7;
+    text-align: center;
+    max-width: 480px; padding: 0 24px;
+    margin-bottom: 28px;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.4);
+  }
+
+  .zoom-buttons {
+    display: flex; gap: 12px; flex-wrap: wrap; justify-content: center;
+  }
+
+  .btn-enter {
+    font-family: 'Syne', sans-serif;
+    font-size: 13px; font-weight: 700;
+    letter-spacing: 3px; text-transform: uppercase;
+    color: #fff; background: rgba(124,58,237,0.8);
+    border: 1.5px solid rgba(192,132,252,0.6);
+    padding: 14px 32px; border-radius: 30px;
+    cursor: pointer; text-decoration: none;
+    transition: all 0.2s;
+    backdrop-filter: blur(8px);
+    box-shadow: 0 0 20px rgba(124,58,237,0.4);
+  }
+  .btn-enter:hover { background: rgba(124,58,237,1); box-shadow: 0 0 32px rgba(124,58,237,0.7); }
+
+  .btn-back-universe {
+    font-family: 'Syne', sans-serif;
+    font-size: 11px; font-weight: 600;
+    letter-spacing: 2px; text-transform: uppercase;
+    color: #9d8fbe; text-decoration: none;
+    cursor: pointer; background: none; border: none;
+    margin-top: 12px; display: block;
+    transition: color 0.2s;
+  }
+  .btn-back-universe:hover { color: #fff; }
+  .dots {
+    position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+    display: flex; gap: 10px; z-index: 50; pointer-events: none;
+  }
+  .dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: rgba(192,132,252,0.3);
+    border: 1.5px solid rgba(192,132,252,0.5);
+    transition: all 0.3s;
+  }
+  .dot.active { background: #c084fc; box-shadow: 0 0 8px rgba(192,132,252,0.8); transform: scale(1.4); }
+
+  .footer {
+    position: fixed; bottom: 6px; left: 50%; transform: translateX(-50%);
+    font-size: 10px; color: #8b7aaa; opacity: 0.3; z-index: 60;
+    font-family: 'Syne', sans-serif; letter-spacing: 1px; pointer-events: none;
+  }
+
+  @keyframes riseIn {
+    from { opacity: 0; transform: translateX(-50%) translateY(-12px); }
+    to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+  }
+</style>
+</head>
+<body>
+
+<canvas id="stars"></canvas>
+<div class="nebula"></div>
+<div class="header" id="header">
+  <h1 class="header-title">Spaces Between Us</h1>
+  <p class="header-sub">creativity · autonomy · expansion</p>
+</div>
+
+<canvas id="scene"></canvas>
+
+<div class="zoom-overlay" id="zoomOverlay">
+  <div class="zoom-desc" id="zoomDesc"></div>
+  <div class="zoom-buttons">
+    <a class="btn-enter" id="btnEnter" href="#">Enter this world →</a>
+  </div>
+  <button class="btn-back-universe" id="btnBack">← Explore other worlds</button>
+</div>
+
+<div class="dots" id="dots"></div>
+<div class="footer">© 2026 Janet Oh · Singapore</div>
+
+<script>
+// ── STARS ──
+const sc = document.getElementById('stars');
+const sctx = sc.getContext('2d');
+function rsz(){ sc.width=window.innerWidth; sc.height=window.innerHeight; }
+rsz(); window.addEventListener('resize', rsz);
+const SF = Array.from({length:200},()=>({x:Math.random(),y:Math.random(),r:Math.random()*1.4+0.3,to:Math.random()*Math.PI*2,ts:Math.random()*0.02+0.004}));
+const SH = [];
+setInterval(()=>SH.push({x:Math.random()*sc.width*0.7,y:Math.random()*sc.height*0.4,vx:Math.random()*5+3,vy:Math.random()*2+1,life:1,decay:Math.random()*0.018+0.01}),2800);
+let ST=0;
+(function animS(){
+  sctx.clearRect(0,0,sc.width,sc.height); ST+=0.016;
+  SF.forEach(s=>{const tw=0.3+0.7*(0.5+0.5*Math.sin(ST*s.ts*60+s.to));sctx.globalAlpha=tw;sctx.fillStyle='#fff';sctx.beginPath();sctx.arc(s.x*sc.width,s.y*sc.height,s.r,0,Math.PI*2);sctx.fill();});
+  for(let i=SH.length-1;i>=0;i--){const s=SH[i];sctx.globalAlpha=s.life*0.7;const g=sctx.createLinearGradient(s.x,s.y,s.x-s.vx*10,s.y-s.vy*10);g.addColorStop(0,'rgba(255,255,255,0.9)');g.addColorStop(1,'rgba(192,132,252,0)');sctx.strokeStyle=g;sctx.lineWidth=1.5;sctx.beginPath();sctx.moveTo(s.x,s.y);sctx.lineTo(s.x-s.vx*10,s.y-s.vy*10);sctx.stroke();s.x+=s.vx;s.y+=s.vy;s.life-=s.decay;if(s.life<=0)SH.splice(i,1);}
+  sctx.globalAlpha=1; requestAnimationFrame(animS);
+})();
+
+// ── SCENE ──
+const cv = document.getElementById('scene');
+const ctx = cv.getContext('2d');
+let W, H;
+function rsScene(){ W=cv.width=window.innerWidth; H=cv.height=window.innerHeight; }
+rsScene(); window.addEventListener('resize', rsScene);
+
+const PLANETS = [
+  { id:'retail', name:'RETAIL\nFIXER', desc:'For shop owners who want stronger teams, smoother operations, and better sales.', url:'retailfixer/index.html', hx:0.25, hy:0.68, base:'#f2a898', dark:'#c07060', light:'#fde8dc', crater:'#e8927a', ring:'#f5a882', walkDir:1, walkSpeed:0.006 },
+  { id:'ssc',    name:'SAFE\nSPACE\nCIRCLE SG', desc:'Workshops where curiosity is welcome and learning feels safe. Come as you are.', url:'safespacecirclesg/index.html', hx:0.75, hy:0.58, base:'#ffd070', dark:'#c89010', light:'#fff3c4', crater:'#f59e0b', ring:'#ffc030', walkDir:-1, walkSpeed:0.009 },
+  { id:'mv',     name:'THE\nMODERN\nVILLAGER', desc:'Stories, conversations and creativity from Singapore\'s most interesting people.', url:'themodernvillager/index.html', hx:0.5, hy:0.78, base:'#88c888', dark:'#3a7a4a', light:'#d4ecd4', crater:'#4a9a5a', ring:'#60b870', walkDir:1, walkSpeed:0.0075 },
+];
+
+PLANETS.forEach((p,i)=>{
+  p.cx=0; p.cy=0; p.scale=1; p.targetScale=1; p.rot=i*1.2;
+  p.walkAngle=i*2.1;
+  p.driftA=Math.random()*Math.PI*2; p.driftS=0.00022+Math.random()*0.0002; p.driftR=8+Math.random()*6;
+  p.tx=0; p.ty=0;
+});
+
+let T=0, zoomedPlanet=null, zooming=false;
+function baseR(){ return Math.min(W,H)*0.16; }
+
+// ── BUILD DOTS ──
+const dotsEl = document.getElementById('dots');
+PLANETS.forEach((_,i)=>{
+  const d=document.createElement('div'); d.className='dot'+(i===0?' active':'');
+  d.id=`dot${i}`; dotsEl.appendChild(d);
+});
+
+// ── DRAW PLANET ──
+function drawPlanet(p){
+  const r=baseR()*p.scale;
+  ctx.save(); ctx.translate(p.cx,p.cy);
+
+  // glow
+  const glow=ctx.createRadialGradient(0,0,r*0.4,0,0,r*2.2);
+  glow.addColorStop(0,p.base+'44'); glow.addColorStop(1,'transparent');
+  ctx.fillStyle=glow; ctx.beginPath(); ctx.arc(0,0,r*2.2,0,Math.PI*2); ctx.fill();
+
+  // ring
+  ctx.save(); ctx.rotate(0.3); ctx.scale(1,0.28);
+  ctx.strokeStyle=p.ring; ctx.lineWidth=r*0.2; ctx.globalAlpha=0.4;
+  ctx.beginPath(); ctx.arc(0,0,r*1.6,0,Math.PI*2); ctx.stroke();
+  ctx.globalAlpha=1; ctx.restore();
+
+  // body
+  const grad=ctx.createRadialGradient(-r*0.3,-r*0.3,r*0.05,0,0,r);
+  grad.addColorStop(0,p.light); grad.addColorStop(0.5,p.base); grad.addColorStop(1,p.dark);
+  ctx.fillStyle=grad; ctx.beginPath(); ctx.arc(0,0,r,0,Math.PI*2); ctx.fill();
+
+  // surface detail
+  ctx.save(); ctx.clip();
+  ctx.fillStyle=p.base+'44'; ctx.beginPath(); ctx.ellipse(0,-r*0.15,r*1.05,r*0.1,p.rot,0,Math.PI*2); ctx.fill();
+  ctx.fillStyle=p.dark+'33'; ctx.beginPath(); ctx.ellipse(0,r*0.25,r*0.85,r*0.09,p.rot,0,Math.PI*2); ctx.fill();
+  ctx.restore();
+
+  // craters
+  [{a:0.6,d:0.55,rs:0.09},{a:2.3,d:0.60,rs:0.07},{a:3.8,d:0.5,rs:0.1},{a:5.0,d:0.58,rs:0.06},{a:1.4,d:0.42,rs:0.08}]
+  .forEach(c=>{
+    const cx2=Math.cos(c.a+p.rot)*r*c.d,cy2=Math.sin(c.a+p.rot)*r*c.d,cr=r*c.rs;
+    ctx.fillStyle=p.dark+'77'; ctx.beginPath(); ctx.arc(cx2,cy2,cr,0,Math.PI*2); ctx.fill();
+    ctx.fillStyle=p.crater+'44'; ctx.beginPath(); ctx.arc(cx2-cr*0.2,cy2-cr*0.2,cr*0.5,0,Math.PI*2); ctx.fill();
+  });
+
+  // shine
+  const shine=ctx.createRadialGradient(-r*0.32,-r*0.32,0,-r*0.32,-r*0.32,r*0.55);
+  shine.addColorStop(0,'rgba(255,255,255,0.28)'); shine.addColorStop(1,'rgba(255,255,255,0)');
+  ctx.fillStyle=shine; ctx.beginPath(); ctx.arc(0,0,r,0,Math.PI*2); ctx.fill();
+
+  // name text
+  ctx.textAlign='center';
+  // name text — clipped inside planet so it can never overflow
+  ctx.save();
+  ctx.beginPath(); ctx.arc(0, 0, r*0.92, 0, Math.PI*2); ctx.clip();
+  ctx.textAlign='center';
+  const nameLines=p.name.split('\n');
+  const br=baseR();
+  const nSize=Math.max(9, br*0.17);
+  ctx.font=`800 ${nSize}px "Syne",sans-serif`;
+  ctx.shadowColor=p.dark; ctx.shadowBlur=18;
+  ctx.fillStyle=p.dark;
+  const nLineH=nSize*1.15;
+  const nStartY=-(nLineH*(nameLines.length-1))/2 - nSize*0.2;
+  nameLines.forEach((line,i)=>ctx.fillText(line,0,nStartY+i*nLineH));
+  ctx.shadowBlur=8; ctx.fillStyle='rgba(255,255,255,0.92)';
+  nameLines.forEach((line,i)=>ctx.fillText(line,0,nStartY+i*nLineH));
+  ctx.shadowBlur=0; ctx.shadowColor='transparent'; ctx.textAlign='left';
+  ctx.restore();
+
+  ctx.restore();
+}
+
+// ── DRAW JANET ──
+function drawJanet(p){
+  const r=baseR()*p.scale;
+  p.walkAngle+=p.walkDir*p.walkSpeed;
+  const angle=-Math.PI/2+Math.sin(p.walkAngle)*0.65;
+  const sx=p.cx+Math.cos(angle)*r;
+  const sy=p.cy+Math.sin(angle)*r;
+  const standAngle=angle+Math.PI/2;
+  const av=r*0.3;
+  const f=Math.floor(T/10)%2;
+
+  ctx.save(); ctx.translate(sx,sy); ctx.rotate(standAngle);
+
+  const skin='#f5c09a', hairCol='#3d1a0a', dressCol='#7c3aed', dressLight='#a855f7', dressDark='#5b21b6', shoeCol='#2d1055';
+
+  // shadow
+  ctx.fillStyle='rgba(0,0,0,0.15)'; ctx.beginPath(); ctx.ellipse(0,av*0.08,av*0.22,av*0.06,0,0,Math.PI*2); ctx.fill();
+
+  // LONG BOB HAIR behind — stays close to head
+  ctx.fillStyle=hairCol;
+  // left side of bob
+  ctx.beginPath();
+  ctx.moveTo(-av*0.2,-av*0.85);
+  ctx.bezierCurveTo(-av*0.35,-av*0.5,-av*0.32,av*0.3,-av*0.22,av*0.5);
+  ctx.bezierCurveTo(-av*0.14,av*0.6,-av*0.08,av*0.55,-av*0.05,av*0.45);
+  ctx.bezierCurveTo(-av*0.12,av*0.2,-av*0.18,-av*0.4,-av*0.05,-av*0.75);
+  ctx.fill();
+  // right side of bob
+  ctx.beginPath();
+  ctx.moveTo(av*0.2,-av*0.85);
+  ctx.bezierCurveTo(av*0.35,-av*0.5,av*0.32,av*0.3,av*0.22,av*0.5);
+  ctx.bezierCurveTo(av*0.14,av*0.6,av*0.08,av*0.55,av*0.05,av*0.45);
+  ctx.bezierCurveTo(av*0.12,av*0.2,av*0.18,-av*0.4,av*0.05,-av*0.75);
+  ctx.fill();
+
+  // shoes
+  ctx.fillStyle=shoeCol;
+  ctx.beginPath(); ctx.ellipse(f===0?-av*0.18:av*0.02,av*0.05,av*0.12,av*0.06,0,0,Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(f===0?av*0.18:-av*0.02,av*0.07,av*0.12,av*0.06,0,0,Math.PI*2); ctx.fill();
+
+  // legs
+  ctx.strokeStyle=dressDark; ctx.lineWidth=av*0.12; ctx.lineCap='round';
+  ctx.beginPath(); ctx.moveTo(f===0?-av*0.14:-av*0.06,-av*0.2); ctx.lineTo(f===0?-av*0.18:av*0.02,av*0.03); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(f===0?av*0.14:av*0.06,-av*0.2); ctx.lineTo(f===0?av*0.18:-av*0.02,av*0.05); ctx.stroke();
+
+  // dress skirt
+  const dg=ctx.createLinearGradient(-av*0.4,-av*0.85,av*0.4,av*0.05);
+  dg.addColorStop(0,dressLight); dg.addColorStop(1,dressDark);
+  ctx.fillStyle=dg;
+  ctx.beginPath(); ctx.moveTo(-av*0.18,-av*0.85); ctx.lineTo(-av*0.42,av*0.02); ctx.quadraticCurveTo(-av*0.44,av*0.05,-av*0.3,av*0.05); ctx.lineTo(av*0.3,av*0.05); ctx.quadraticCurveTo(av*0.44,av*0.05,av*0.42,av*0.02); ctx.lineTo(av*0.18,-av*0.85); ctx.closePath(); ctx.fill();
+
+  // waist detail
+  ctx.fillStyle='rgba(255,255,255,0.15)'; ctx.beginPath(); ctx.roundRect(-av*0.16,-av*0.38,av*0.32,av*0.06,av*0.03); ctx.fill();
+
+  // arms
+  ctx.strokeStyle=dressCol; ctx.lineWidth=av*0.1; ctx.lineCap='round';
+  ctx.beginPath(); ctx.moveTo(-av*0.18,-av*0.82); ctx.quadraticCurveTo(-av*0.35,f===0?-av*0.55:-av*0.45,-av*0.28,f===0?-av*0.42:-av*0.32); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(av*0.18,-av*0.82); ctx.quadraticCurveTo(av*0.35,f===0?-av*0.45:-av*0.55,av*0.28,f===0?-av*0.32:-av*0.42); ctx.stroke();
+  ctx.fillStyle=skin;
+  ctx.beginPath(); ctx.ellipse(-av*0.28,f===0?-av*0.4:-av*0.3,av*0.07,av*0.07,0,0,Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(av*0.28,f===0?-av*0.3:-av*0.4,av*0.07,av*0.07,0,0,Math.PI*2); ctx.fill();
+
+  // neck
+  ctx.fillStyle=skin; ctx.fillRect(-av*0.07,-av*1.05,av*0.14,av*0.22);
+
+  // head
+  ctx.fillStyle=skin; ctx.beginPath(); ctx.ellipse(0,-av*1.2,av*0.22,av*0.24,0,0,Math.PI*2); ctx.fill();
+
+  // blush
+  ctx.fillStyle='#f4a090'; ctx.globalAlpha=0.5;
+  ctx.beginPath(); ctx.ellipse(-av*0.13,-av*1.13,av*0.08,av*0.05,0,0,Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(av*0.13,-av*1.13,av*0.08,av*0.05,0,0,Math.PI*2); ctx.fill();
+  ctx.globalAlpha=1;
+
+  // hair front — bob shape
+  ctx.fillStyle=hairCol;
+  ctx.beginPath(); ctx.ellipse(0,-av*1.38,av*0.23,av*0.14,0,0,Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.moveTo(-av*0.23,-av*1.38); ctx.bezierCurveTo(-av*0.38,-av*1.22,-av*0.35,-av*0.98,-av*0.22,-av*0.94); ctx.bezierCurveTo(-av*0.12,-av*0.9,-av*0.1,-av*0.96,-av*0.16,-av*1.05); ctx.bezierCurveTo(-av*0.2,-av*1.18,-av*0.2,-av*1.3,av*0,-av*1.38); ctx.fill();
+  ctx.beginPath(); ctx.moveTo(av*0.23,-av*1.38); ctx.bezierCurveTo(av*0.38,-av*1.22,av*0.35,-av*0.98,av*0.22,-av*0.94); ctx.bezierCurveTo(av*0.12,-av*0.9,av*0.1,-av*0.96,av*0.16,-av*1.05); ctx.bezierCurveTo(av*0.2,-av*1.18,av*0.2,-av*1.3,av*0,-av*1.38); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(0,-av*1.41,av*0.2,av*0.08,0,0,Math.PI*2); ctx.fill();
+
+  // eyes
+  ctx.fillStyle='#2a0a2a';
+  ctx.beginPath(); ctx.ellipse(-av*0.08,-av*1.22,av*0.055,av*0.065,0,0,Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(av*0.08,-av*1.22,av*0.055,av*0.065,0,0,Math.PI*2); ctx.fill();
+  ctx.fillStyle='rgba(255,255,255,0.8)';
+  ctx.beginPath(); ctx.ellipse(-av*0.065,-av*1.235,av*0.02,av*0.02,0,0,Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(av*0.095,-av*1.235,av*0.02,av*0.02,0,0,Math.PI*2); ctx.fill();
+
+  // lips
+  ctx.fillStyle='#d45070'; ctx.beginPath(); ctx.ellipse(0,-av*1.09,av*0.07,av*0.035,0,0,Math.PI*2); ctx.fill();
+
+  ctx.restore();
+}
+
+// ── CLICK HANDLER ──
+cv.addEventListener('click', e=>{
+  const rect=cv.getBoundingClientRect();
+  const mx=e.clientX-rect.left, my=e.clientY-rect.top;
+  let hit=null;
+  PLANETS.forEach(p=>{
+    const dx=mx-p.cx, dy=my-p.cy;
+    if(Math.sqrt(dx*dx+dy*dy)<baseR()*p.scale*1.3) hit=p;
+  });
+  if(hit && hit!==zoomedPlanet) zoomIn(hit); // switch directly to any clicked planet
+});
+
+function zoomIn(p){
+  zoomedPlanet=p;
+  document.getElementById('zoomDesc').textContent=p.desc;
+  document.getElementById('btnEnter').href=p.url;
+  document.getElementById('zoomOverlay').classList.add('show');
+  PLANETS.forEach((pl,i)=>{ document.getElementById(`dot${i}`).className='dot'+(pl===p?' active':''); });
+}
+
+document.getElementById('btnBack').addEventListener('click', ()=>{
+  zoomedPlanet=null;
+  document.getElementById('zoomOverlay').classList.remove('show');
+  PLANETS.forEach((_,i)=>document.getElementById(`dot${i}`).className='dot');
+});
+
+// ── INIT ──
+function initPlanets(){
+  PLANETS.forEach(p=>{ p.cx=W*p.hx; p.cy=H*p.hy; p.scale=1; p.tx=W*p.hx; p.ty=H*p.hy; });
+}
+initPlanets(); window.addEventListener('resize',()=>{ rsScene(); initPlanets(); });
+
+// parallax
+document.addEventListener('mousemove',e=>{
+  if(zoomedPlanet) return;
+  const mx=(e.clientX/window.innerWidth-0.5)*12;
+  const my=(e.clientY/window.innerHeight-0.5)*12;
+  document.querySelector('.nebula').style.transform=`translate(${mx}px,${my}px)`;
+});
+
+// ── MAIN LOOP ──
+(function loop(){
+  ctx.clearRect(0,0,W,H); T++;
+
+  PLANETS.forEach(p=>{
+    p.rot+=0.0012;
+
+    let tx,ty,ts;
+    if(zoomedPlanet===p){
+      // zoomed: come to centre
+      tx=W*0.5; ty=H*0.52; ts=1.6;
+    } else if(zoomedPlanet){
+      // others: drift to sides
+      const others=PLANETS.filter(pl=>pl!==zoomedPlanet);
+      const idx=others.indexOf(p);
+      tx=idx===0?W*0.18:W*0.82; ty=H*0.48; ts=0.5;
+    } else {
+      // idle drift
+      const driftX=Math.cos(p.driftA+T*p.driftS)*p.driftR;
+      const driftY=Math.sin(p.driftA+T*p.driftS*0.65)*p.driftR*0.5;
+      tx=W*p.hx+driftX; ty=H*p.hy+driftY; ts=1;
+    }
+
+    p.cx+=(tx-p.cx)*0.1;
+    p.cy+=(ty-p.cy)*0.1;
+    p.scale+=(ts-p.scale)*0.1;
+
+    ctx.globalAlpha = zoomedPlanet&&zoomedPlanet!==p ? 0.6 : 1;
+    drawPlanet(p);
+    drawJanet(p);
+    ctx.globalAlpha=1;
+  });
+
+  requestAnimationFrame(loop);
+})();
+</script>
+</body>
+</html>
