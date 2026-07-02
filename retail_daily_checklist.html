@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Shop Routine — Janet Oh · Retail Fixer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700&family=Hanken+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background: #33291F;
+            min-height: 100vh;
+            font-family: 'Hanken Grotesk', sans-serif;
+            padding: clamp(20px, 4vw, 52px) 16px;
+            color: #2B2521;
+        }
+
+        /* Brand strip */
+        .brand-strip {
+            max-width: 720px;
+            margin: 0 auto 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .brand-strip a {
+            font-family: 'Space Mono', monospace;
+            font-size: 11px;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: #8A7862;
+            text-decoration: none;
+            transition: color 0.15s;
+        }
+        .brand-strip a:hover { color: #E0A56A; }
+        .brand-name {
+            font-family: 'Space Mono', monospace;
+            font-size: 11px;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: #C15F3C;
+        }
+
+        /* Main card */
+        .card {
+            max-width: 720px;
+            margin: 0 auto;
+            background: #FFFCF6;
+            border: 1px solid #E7D8C4;
+            border-radius: 24px;
+            padding: clamp(24px, 5vw, 48px);
+            box-shadow: 0 40px 80px -40px rgba(51, 41, 31, 0.6);
+        }
+
+        /* Card header */
+        .card-header {
+            text-align: center;
+            padding-bottom: clamp(20px, 3vw, 28px);
+            margin-bottom: clamp(20px, 3vw, 28px);
+            border-bottom: 1px solid #E7D8C4;
+        }
+        .eyebrow {
+            font-family: 'Space Mono', monospace;
+            font-size: 11px;
+            letter-spacing: 0.22em;
+            text-transform: uppercase;
+            color: #C15F3C;
+            margin-bottom: 14px;
+        }
+        .card-header h1 {
+            font-family: 'Bricolage Grotesque', sans-serif;
+            font-weight: 600;
+            font-size: clamp(26px, 5vw, 40px);
+            letter-spacing: -0.02em;
+            line-height: 1.1;
+            color: #2B2521;
+            margin-bottom: 10px;
+        }
+        .card-header p {
+            font-size: 15.5px;
+            color: #6B5E52;
+            line-height: 1.5;
+        }
+
+        /* Progress */
+        .progress-wrap { margin-bottom: clamp(24px, 3vw, 36px); }
+        .progress-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        .progress-label {
+            font-family: 'Space Mono', monospace;
+            font-size: 10.5px;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: #8A7862;
+        }
+        .progress-count {
+            font-family: 'Space Mono', monospace;
+            font-size: 12px;
+            font-weight: 700;
+            color: #C15F3C;
+        }
+        .progress-track {
+            height: 6px;
+            background: #EFE2CF;
+            border-radius: 999px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            background: #C15F3C;
+            border-radius: 999px;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        /* Task sections */
+        .task-section { margin-bottom: clamp(20px, 3vw, 32px); }
+        .section-heading {
+            font-family: 'Space Mono', monospace;
+            font-size: 10.5px;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: #8A7862;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px dashed #E0CFB8;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Task items */
+        .task-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 13px 16px;
+            border-radius: 12px;
+            border: 1.5px solid transparent;
+            background: #FBF3E9;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: background 0.15s, border-color 0.15s;
+            user-select: none;
+        }
+        .task-item:hover { background: #F5E9D8; border-color: #E0CFB8; }
+        .task-item.checked { opacity: 0.5; }
+        .task-item.checked label {
+            text-decoration: line-through;
+            color: #8A7862;
+        }
+        .task-item input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            min-width: 20px;
+            cursor: pointer;
+            accent-color: #C15F3C;
+            border-radius: 6px;
+        }
+        .task-item label {
+            font-size: 15px;
+            font-weight: 500;
+            color: #2B2521;
+            line-height: 1.4;
+            cursor: pointer;
+            flex: 1;
+        }
+
+        /* Handover notes */
+        .handover {
+            margin-top: clamp(24px, 3vw, 32px);
+            padding-top: clamp(20px, 3vw, 28px);
+            border-top: 1px solid #E7D8C4;
+        }
+        .handover-label {
+            font-family: 'Space Mono', monospace;
+            font-size: 10.5px;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: #C15F3C;
+            margin-bottom: 8px;
+        }
+        .handover h3 {
+            font-family: 'Bricolage Grotesque', sans-serif;
+            font-weight: 600;
+            font-size: 20px;
+            color: #2B2521;
+            margin-bottom: 6px;
+        }
+        .handover .hint {
+            font-size: 13.5px;
+            color: #8A7862;
+            margin-bottom: 12px;
+            font-style: italic;
+        }
+        .handover textarea {
+            width: 100%;
+            height: 120px;
+            padding: 14px 16px;
+            border: 1.5px solid #E7D8C4;
+            border-radius: 14px;
+            background: #FBF3E9;
+            font-family: 'Hanken Grotesk', sans-serif;
+            font-size: 15px;
+            color: #2B2521;
+            line-height: 1.55;
+            resize: vertical;
+            outline: none;
+            transition: border-color 0.15s, background 0.15s;
+        }
+        .handover textarea:focus { border-color: #C15F3C; background: #FFFCF6; }
+        .handover textarea::placeholder { color: #B7A487; }
+
+        /* Buttons */
+        .actions {
+            margin-top: clamp(20px, 3vw, 28px);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        @media (min-width: 480px) { .actions { flex-direction: row; } }
+
+        .btn-secondary {
+            flex: 1;
+            padding: 14px 20px;
+            border-radius: 999px;
+            border: 1.5px solid #DCC7A8;
+            background: transparent;
+            color: #6B5E52;
+            font-family: 'Hanken Grotesk', sans-serif;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: border-color 0.15s, color 0.15s;
+        }
+        .btn-secondary:hover { border-color: #2B2521; color: #2B2521; }
+
+        .btn-primary {
+            flex: 1;
+            padding: 14px 20px;
+            border-radius: 999px;
+            border: none;
+            background: #C15F3C;
+            color: #FBF3E9;
+            font-family: 'Hanken Grotesk', sans-serif;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.15s;
+            box-shadow: 0 8px 20px -10px rgba(193, 95, 60, 0.65);
+        }
+        .btn-primary:hover:not(:disabled) { background: #A34D2E; }
+        .btn-primary:disabled { background: #8A9A6B; box-shadow: none; cursor: default; }
+    </style>
+</head>
+<body>
+
+    <!-- Brand strip -->
+    <div class="brand-strip">
+        <a href="/">← iamjanetohohoh.com</a>
+        <span class="brand-name">Janet Oh · Retail</span>
+    </div>
+
+    <!-- Card -->
+    <div class="card">
+
+        <header class="card-header">
+            <div class="eyebrow">Digital Tool · Daily Operations</div>
+            <h1>Daily Shop Routine</h1>
+            <p>Keep the shop running smoothly, one task at a time.</p>
+        </header>
+
+        <!-- Progress -->
+        <div class="progress-wrap">
+            <div class="progress-meta">
+                <span class="progress-label">Progress</span>
+                <span class="progress-count" id="progress-count">0 / 15 done</span>
+            </div>
+            <div class="progress-track">
+                <div class="progress-fill" id="progress-fill"></div>
+            </div>
+        </div>
+
+        <!-- Checklist -->
+        <div id="checklist-container">
+            <div class="task-section">
+                <div class="section-heading">🌅&nbsp; Starting the Day</div>
+                <div id="morning-tasks"></div>
+            </div>
+            <div class="task-section">
+                <div class="section-heading">📦&nbsp; Mid-Day &amp; Ongoing</div>
+                <div id="midday-tasks"></div>
+            </div>
+            <div class="task-section">
+                <div class="section-heading">🌙&nbsp; Wrapping Up</div>
+                <div id="closing-tasks"></div>
+            </div>
+        </div>
+
+        <!-- Handover notes -->
+        <div class="handover">
+            <div class="handover-label">Handover note</div>
+            <h3>Daily Log</h3>
+            <p class="hint">Anything the next team needs to know? Issues, deliveries, or inventory updates?</p>
+            <textarea id="handover-notes" placeholder="Notes for the team..."></textarea>
+        </div>
+
+        <!-- Actions -->
+        <div class="actions">
+            <button class="btn-secondary" onclick="clearChecklist()">Reset Everything</button>
+            <button class="btn-primary" id="save-btn" onclick="saveData()">Save Progress</button>
+        </div>
+
+    </div>
+
+    <script>
+        const tasks = {
+            morning: [
+                "Disarm security and unlock main doors",
+                "Switch on lights and shop displays",
+                "Check the till / point of sale (POS) is ready",
+                "Give the floor and counters a quick look-over",
+                "Play some music and set the mood"
+            ],
+            midday: [
+                "Check for and receive any incoming deliveries",
+                "Quick stock-take: Check for any missing items or discrepancies",
+                "Make sure shelves/displays are tidy and full",
+                "Empty bins if they are getting full",
+                "Check for any customer requests or pending orders"
+            ],
+            closing: [
+                "Process the final cash count and reports",
+                "Tidy the shop floor and prepare for tomorrow",
+                "Secure all incoming stock and paperwork",
+                "Turn off displays, music, and non-essential lights",
+                "Lock up, set the alarm, and double-check doors"
+            ]
+        };
+
+        const totalTasks = Object.values(tasks).flat().length;
+
+        function renderTasks() {
+            const sections = {
+                morning: document.getElementById('morning-tasks'),
+                midday:  document.getElementById('midday-tasks'),
+                closing: document.getElementById('closing-tasks')
+            };
+            for (const [key, container] of Object.entries(sections)) {
+                tasks[key].forEach((task, index) => {
+                    const item = document.createElement('div');
+                    item.className = 'task-item';
+                    item.innerHTML = `
+                        <input type="checkbox" id="${key}-${index}" onchange="toggleTask(this)">
+                        <label for="${key}-${index}">${task}</label>
+                    `;
+                    /* Click anywhere on the row to toggle */
+                    item.addEventListener('click', (e) => {
+                        if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'LABEL') {
+                            const cb = item.querySelector('input');
+                            cb.checked = !cb.checked;
+                            toggleTask(cb);
+                        }
+                    });
+                    container.appendChild(item);
+                });
+            }
+            loadData();
+        }
+
+        function toggleTask(checkbox) {
+            checkbox.closest('.task-item').classList.toggle('checked', checkbox.checked);
+            updateProgress();
+            saveData(true);
+        }
+
+        function updateProgress() {
+            const done = document.querySelectorAll('input[type="checkbox"]:checked').length;
+            const pct = Math.round((done / totalTasks) * 100);
+            document.getElementById('progress-fill').style.width = pct + '%';
+            document.getElementById('progress-count').textContent = `${done} / ${totalTasks} done`;
+        }
+
+        function saveData(silent = false) {
+            const status = {};
+            document.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+                status[cb.id] = cb.checked;
+            });
+            localStorage.setItem('retailChecklistStatus', JSON.stringify(status));
+            localStorage.setItem('retailHandoverNotes', document.getElementById('handover-notes').value);
+
+            if (!silent) {
+                const btn = document.getElementById('save-btn');
+                const orig = btn.textContent;
+                btn.textContent = 'Saved ✓';
+                btn.disabled = true;
+                setTimeout(() => { btn.textContent = orig; btn.disabled = false; }, 2000);
+            }
+        }
+
+        function loadData() {
+            const saved = JSON.parse(localStorage.getItem('retailChecklistStatus') || '{}');
+            Object.keys(saved).forEach(id => {
+                const cb = document.getElementById(id);
+                if (cb) {
+                    cb.checked = saved[id];
+                    if (cb.checked) cb.closest('.task-item').classList.add('checked');
+                }
+            });
+            document.getElementById('handover-notes').value =
+                localStorage.getItem('retailHandoverNotes') || '';
+            updateProgress();
+        }
+
+        function clearChecklist() {
+            if (confirm("Start fresh? This will clear all checks and notes.")) {
+                localStorage.removeItem('retailChecklistStatus');
+                localStorage.removeItem('retailHandoverNotes');
+                location.reload();
+            }
+        }
+
+        window.onload = renderTasks;
+    </script>
+</body>
+</html>
