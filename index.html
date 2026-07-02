@@ -18,6 +18,50 @@
       This page requires JavaScript to display.
     </div>
   </noscript>
+<style id="rf-mobile">
+/* ===== RETAIL FIXER — MOBILE RESPONSIVE ===== */
+
+/* Prevent horizontal scroll */
+@media (max-width: 768px) {
+  html, body { overflow-x: hidden !important; max-width: 100vw !important; }
+  * { min-width: 0; box-sizing: border-box; }
+
+  /* Override outer body flex (fixes full-width rendering) */
+  body { display: block !important; align-items: initial !important; justify-content: initial !important; }
+
+  /* ---- NAV: hide text links, keep brand + CTA ---- */
+  nav a[href="#problem"],
+  nav a[href="#solutions"],
+  nav a[href="#about"] { display: none !important; }
+
+  /* ---- HERO: 2-col → 1-col, scale h1 ---- */
+  #top > div { grid-template-columns: 1fr !important; gap: 28px !important; }
+  #top h1 { font-size: clamp(26px, 7.5vw, 38px) !important; line-height: 1.1 !important; }
+
+  /* ---- PROBLEM: 3-col cards → 1-col ---- */
+  #problem > div > div:last-child { grid-template-columns: 1fr !important; gap: 20px !important; }
+  #problem h2 { font-size: clamp(22px, 7vw, 34px) !important; }
+
+  /* ---- SOLUTIONS: 2×2 cards → 1-col ---- */
+  #solutions > div > div:last-child { grid-template-columns: 1fr !important; gap: 16px !important; }
+  #solutions h2 { font-size: clamp(22px, 7vw, 34px) !important; }
+
+  /* ---- ABOUT: 2-col → 1-col ---- */
+  #about > div { grid-template-columns: 1fr !important; gap: 28px !important; }
+
+  /* ---- NEWSLETTER: 2-col → 1-col ---- */
+  #newsletter > div { grid-template-columns: 1fr !important; gap: 24px !important; }
+
+  /* ---- CONTACT: 2-col form layout → 1-col ---- */
+  #contact > div > div:last-child { grid-template-columns: 1fr !important; gap: 24px !important; }
+
+  /* ---- AUDIT: touch-friendly buttons (min 48px tap target) ---- */
+  #audit button { min-height: 48px !important; }
+
+  /* ---- FOOTER: already flex-wrap, just needs no truncation ---- */
+  footer > div { flex-direction: column !important; align-items: flex-start !important; gap: 12px !important; }
+}
+</style>
 </head>
 <body>
 <form name="contact" data-netlify="true" netlify-honeypot="bot-field" hidden>
@@ -243,6 +287,56 @@ document.addEventListener('DOMContentLoaded', async function() {
   }
 }
 </style>
+
+<script>
+/* Retail Fixer — mobile responsive JS: collapse any remaining multi-col grids */
+(function () {
+  var BP = 768;
+  function mobile() { return window.innerWidth <= BP; }
+
+  function fixGrids() {
+    if (!mobile()) return;
+    /* Collapse every multi-column grid on the page */
+    document.querySelectorAll('div, section, header, nav, footer').forEach(function (el) {
+      var cs = window.getComputedStyle(el);
+      if (cs.display !== 'grid') return;
+      var gtc = cs.gridTemplateColumns;
+      if (!gtc || gtc === 'none' || gtc === '1fr') return;
+      /* Multi-column = value contains a space (multiple track sizes) */
+      if (gtc.trim().indexOf(' ') !== -1) {
+        el.style.setProperty('grid-template-columns', '1fr', 'important');
+      }
+    });
+    /* Touch targets: all buttons at least 48px tall */
+    document.querySelectorAll('button').forEach(function (btn) {
+      var h = parseFloat(window.getComputedStyle(btn).height);
+      if (h < 44) btn.style.setProperty('min-height', '48px', 'important');
+    });
+  }
+
+  var timer, busy = false;
+  function schedule() {
+    clearTimeout(timer);
+    timer = setTimeout(function () {
+      if (busy) return;
+      busy = true; fixGrids(); busy = false;
+    }, 80);
+  }
+
+  /* Initial run after runtime renders */
+  window.addEventListener('load', function () { setTimeout(fixGrids, 200); });
+
+  /* Watch for dynamic audit state changes (quiz / result renders) */
+  window.addEventListener('load', function () {
+    var audit = document.getElementById('audit');
+    if (!audit) return;
+    new MutationObserver(function () { if (mobile()) schedule(); })
+      .observe(audit, { childList: true, subtree: true, attributes: true, attributeFilter: ['style'] });
+  });
+
+  window.addEventListener('resize', schedule);
+})();
+</script>
 
 </body>
 </html>
