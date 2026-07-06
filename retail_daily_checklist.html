@@ -838,6 +838,15 @@
 
         /* ── Export / Import ── */
 
+        function escapeHtml(str) {
+            return String(str ?? '')
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#x27;');
+        }
+
         function csvEscape(value) {
             let v = String(value ?? '');
             if (/^[=+\-@]/.test(v)) v = "'" + v;
@@ -939,7 +948,8 @@
                     const history = loadHistory();
                     for (let r = 1; r < rows.length; r++) {
                         const cells = rows[r];
-                        const date = cells[dateIdx];
+                        // All string values from CSV cells are escaped before use — never treated as HTML
+                        const date = escapeHtml(cells[dateIdx]);
                         if (!date) continue;
                         const record = emptyDayRecord();
                         ids.forEach(id => {
@@ -950,11 +960,10 @@
                             const idx = taskText ? header.indexOf(taskText) : -1;
                             const fallbackIdx = idx === -1 ? header.indexOf(id) : -1;
                             const col = idx !== -1 ? idx : fallbackIdx;
-                            /* Checkbox state read only as literal "TRUE" — never rendered as HTML */
+                            // Checkbox state: only literal "TRUE" matches — result is boolean, never HTML
                             record.checked[id] = col !== -1 && cells[col] === 'TRUE';
                         });
-                        /* Notes written to textarea value, never innerHTML — safe from injection */
-                        record.note = cells[noteIdx] || '';
+                        record.note = escapeHtml(cells[noteIdx] || '');
                         history[date] = record;
                     }
                     saveHistory(history);
