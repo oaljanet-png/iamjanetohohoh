@@ -168,6 +168,31 @@
             margin-top: 12px;
         }
 
+        .marketing-consent {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            margin-top: 14px;
+            cursor: pointer;
+        }
+        .marketing-consent input[type="checkbox"] {
+            width: 18px; height: 18px; min-width: 18px; margin-top: 2px;
+            accent-color: #C15F3C;
+            cursor: pointer;
+        }
+        .marketing-consent span {
+            font-size: 13.5px;
+            color: #6B5E52;
+            line-height: 1.45;
+        }
+        .consent-hint {
+            font-size: 12px;
+            color: #8A7862;
+            font-style: italic;
+            margin-top: 4px;
+            margin-left: 28px;
+        }
+
         /* ─── CHECKLIST STYLES ─── */
         #checklist-view { display: none; }
 
@@ -330,6 +355,7 @@
     <!-- Netlify form detection (hidden static form, required for Netlify to register it) -->
     <form name="checklist-access" data-netlify="true" hidden>
         <input type="email" name="email">
+        <input type="checkbox" name="marketing-optin">
     </form>
 
     <!-- ═══════════════ GATE VIEW ═══════════════ -->
@@ -379,10 +405,15 @@
                     required
                 >
                 <p class="gate-error" id="gate-error">Please enter a valid email address.</p>
-                <button type="submit" class="btn-gate" id="gate-submit">
+                <label class="marketing-consent">
+                    <input type="checkbox" id="marketing-optin" name="marketing-optin">
+                    <span>Also send me occasional updates and creative resources from Janet Oh</span>
+                </label>
+                <p class="consent-hint">Optional — unticked by default. You can unsubscribe anytime.</p>
+                <button type="submit" class="btn-gate" id="gate-submit" style="margin-top:18px;">
                     Get instant access &nbsp;→
                 </button>
-                <p class="fine-print">No spam. Updates from Retail Fixer only.</p>
+                <p class="fine-print">Free access — no payment needed.</p>
             </form>
         </div>
     </div>
@@ -441,59 +472,7 @@
     </div>
 
     <script>
-        /* ── Gate logic ── */
-        const GATE_KEY = 'checklistEmail';
-
-        function showChecklist() {
-            document.getElementById('gate-view').style.display = 'none';
-            const cv = document.getElementById('checklist-view');
-            cv.style.display = 'block';
-            cv.classList.add('fade-in');
-            renderTasks();
-        }
-
-        document.getElementById('gate-form').addEventListener('submit', async function (e) {
-            e.preventDefault();
-            const emailEl = document.getElementById('gate-email');
-            const errorEl = document.getElementById('gate-error');
-            const btn     = document.getElementById('gate-submit');
-            const email   = emailEl.value.trim();
-            const valid   = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-
-            if (!valid) {
-                errorEl.style.display = 'block';
-                emailEl.focus();
-                return;
-            }
-            errorEl.style.display = 'none';
-
-            btn.textContent = 'Getting access…';
-            btn.disabled = true;
-
-            /* Submit to Netlify Forms */
-            try {
-                await fetch('/', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                    body: new URLSearchParams({
-                        'form-name': 'checklist-access',
-                        'email': email
-                    }).toString()
-                });
-            } catch (_) {
-                /* Network error — still grant access */
-            }
-
-            localStorage.setItem(GATE_KEY, email);
-            showChecklist();
-        });
-
-        /* Skip gate for returning visitors */
-        if (localStorage.getItem(GATE_KEY)) {
-            showChecklist();
-        }
-
-        /* ── Checklist logic ── */
+        /* ── Checklist data & logic (declared first so renderTasks() can use them) ── */
         const tasks = {
             morning: [
                 "Disarm security and unlock main doors",
@@ -558,7 +537,7 @@
         }
 
         function updateProgress() {
-            const done = document.querySelectorAll('input[type="checkbox"]:checked').length;
+            const done = document.querySelectorAll('#checklist-container input[type="checkbox"]:checked').length;
             const pct  = Math.round((done / totalTasks) * 100);
             document.getElementById('progress-fill').style.width = pct + '%';
             document.getElementById('progress-count').textContent = `${done} / ${totalTasks} done`;
@@ -601,6 +580,58 @@
                 localStorage.removeItem('retailHandoverNotes');
                 location.reload();
             }
+        }
+
+        /* ── Gate logic (after all checklist declarations so renderTasks() works) ── */
+        const GATE_KEY = 'checklistEmail';
+
+        function showChecklist() {
+            document.getElementById('gate-view').style.display = 'none';
+            const cv = document.getElementById('checklist-view');
+            cv.style.display = 'block';
+            cv.classList.add('fade-in');
+            renderTasks();
+        }
+
+        document.getElementById('gate-form').addEventListener('submit', async function (e) {
+            e.preventDefault();
+            const emailEl = document.getElementById('gate-email');
+            const errorEl = document.getElementById('gate-error');
+            const btn     = document.getElementById('gate-submit');
+            const email   = emailEl.value.trim();
+            const valid   = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
+            if (!valid) {
+                errorEl.style.display = 'block';
+                emailEl.focus();
+                return;
+            }
+            errorEl.style.display = 'none';
+            btn.textContent = 'Getting access…';
+            btn.disabled = true;
+
+            /* Submit to Netlify Forms */
+            try {
+                await fetch('/', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: new URLSearchParams({
+                        'form-name': 'checklist-access',
+                        'email': email,
+                        'marketing-optin': document.getElementById('marketing-optin').checked ? 'yes' : 'no'
+                    }).toString()
+                });
+            } catch (_) {
+                /* Network error — still grant access */
+            }
+
+            localStorage.setItem(GATE_KEY, email);
+            showChecklist();
+        });
+
+        /* Skip gate for returning visitors */
+        if (localStorage.getItem(GATE_KEY)) {
+            showChecklist();
         }
     </script>
 </body>
