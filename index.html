@@ -338,5 +338,56 @@ document.addEventListener('DOMContentLoaded', async function() {
 })();
 </script>
 
+<script>
+/* Replace about-section dark card with profile photo */
+(function () {
+  function injectPhoto() {
+    var about = document.getElementById('about');
+    if (!about) return false;
+
+    /* Strategy 1: structural — first div > first div > first div inside #about */
+    var target = about.querySelector('div > div:first-child > div:first-child');
+
+    /* Strategy 2: attribute string (preserved as-is in some browsers) */
+    if (!target) {
+      target = about.querySelector('[style*="background:#33291F"]') ||
+               about.querySelector('[style*="background: #33291F"]');
+    }
+
+    /* Strategy 3: inline style.background / backgroundColor normalised to rgb() */
+    if (!target) {
+      var divs = about.querySelectorAll('div');
+      for (var i = 0; i < divs.length; i++) {
+        var bg = (divs[i].style.backgroundColor || divs[i].style.background || '').replace(/\s/g, '');
+        if (bg === 'rgb(51,41,31)' || bg.toLowerCase() === '#33291f') {
+          target = divs[i];
+          break;
+        }
+      }
+    }
+
+    if (!target || target.tagName === 'IMG') return !!target;
+
+    var img = document.createElement('img');
+    img.src = 'profile-photo.png';
+    img.alt = 'Janet Oh — Retail Fixer';
+    img.setAttribute('style',
+      'aspect-ratio:4/5;border-radius:20px;border:1px solid #DCC7A8;' +
+      'width:100%;object-fit:cover;object-position:center top;display:block;'
+    );
+    target.parentNode.replaceChild(img, target);
+    return true;
+  }
+
+  /* Retry up to 10× in case the runtime hasn't rendered yet */
+  var attempts = 0;
+  function tryInject() {
+    if (injectPhoto()) return;
+    if (++attempts < 10) setTimeout(tryInject, 200);
+  }
+  window.addEventListener('load', tryInject);
+})();
+</script>
+
 </body>
 </html>
