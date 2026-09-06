@@ -45,14 +45,15 @@ a:hover { color:oklch(0.62 0.17 350); }
   #contact form > div { flex-direction: column !important; }
   #contact input, #contact textarea { width: 100% !important; box-sizing: border-box !important; }
   a[href^="#"] { font-size: 11px !important; padding: 10px 4px !important; }
-  #nav a { flex: 0 0 33.333% !important; }
+  #nav { display: grid !important; grid-template-columns: repeat(3, 1fr) !important; }
+  #nav a { border-bottom: 2px solid oklch(0.2 0.03 300); }
 }
 @media (max-width: 480px) {
   h1 { font-size: 18vw !important; }
   #home { height: 340px !important; }
   #gallery > div { grid-template-columns: 1fr !important; }
   #services, #reviews, #contact, #gallery { padding: 48px 4vw !important; }
-  #nav a { flex: 0 0 50% !important; }
+  #nav { grid-template-columns: repeat(2, 1fr) !important; }
 }
 </style>
 </head>
